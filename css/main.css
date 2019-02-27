@@ -1536,7 +1536,7 @@ header .logo a {
 	margin-bottom: .6rem;
 }
 .about-content .info-list li strong {
-	font-family: "poppins-bold", sans-serif;
+	font-family: "poppins-bold", "poppins-regular";
 	color: #313131;
 	text-transform: uppercase;
 	letter-spacing: .2rem;
@@ -1545,7 +1545,7 @@ header .logo a {
 }
 .about-content .info-list li span {
 	display: block;
-	font-family: "poppins-regular", sans-serif;
+	font-family: "poppins-regular", "poppins-regular";
 	color: #888888;
 	font-size: 1.5rem;
 	line-height: 1;
