@@ -105,7 +105,6 @@
             group.appendChild(soma);
             group.appendChild(nucleus);
 
-            // Add synapses
             const synapses = [];
             for (let i = 0; i < 3; i++) {
                 const synapse = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
@@ -126,7 +125,7 @@
                 y: Math.random() * window.innerHeight,
                 amplitude: Math.random() * 100 + 50,
                 frequency: Math.random() * 0.01 + 0.005,
-                axonWidth: Math.random() * 5 + 10, // 10-15px thickness
+                axonWidth: Math.random() * 5 + 10, 
                 direction: Math.random() * Math.PI * 2
             };
         }
@@ -139,8 +138,7 @@
             const maxHeight = totalHeight * 1.5;
             
             neurons.forEach(neuron => {
-                // Update soma and nucleus (not clipped)
-                const somaSize = 27 + Math.sin(scrollY * 0.000001) * 0.05; // Slightly reduced size
+                const somaSize = 27 + Math.sin(scrollY * 0.000001) * 0.05;
                 const somaPath = generateIrregularShape(neuron.x, neuron.y, somaSize, 8);
                 neuron.soma.setAttribute('d', somaPath);
 
@@ -149,9 +147,8 @@
                 neuron.nucleus.setAttribute('cy', neuron.y);
                 neuron.nucleus.setAttribute('r', nucleusSize);
 
-                // Update axon
-                let d = `M${neuron.x} ${neuron.y}`; // Start from the center (nucleus)
-                const length = maxHeight * 0.6; // Increased length
+                let d = `M${neuron.x} ${neuron.y}`; 
+                const length = maxHeight * 0.6;
                 for (let i = 0; i <= length; i += 20) {
                     const angle = neuron.direction + Math.sin(i * neuron.frequency) * 0.5;
                     const x = neuron.x + Math.cos(angle) * i;
@@ -161,11 +158,9 @@
                 neuron.path.setAttribute('d', d);
                 neuron.path.style.strokeWidth = neuron.axonWidth;
 
-                // Clip axon
                 const clipHeight = scrollPercentage * maxHeight;
                 neuron.path.style.clipPath = `polygon(0 0, 100% 0, 100% ${clipHeight}px, 0 ${clipHeight}px)`;
 
-                // Update synapses (not clipped)
                 neuron.synapses.forEach((synapse, index) => {
                     const angle = (index / neuron.synapses.length) * Math.PI * 2 + neuron.direction;
                     const distance = somaSize * 1.2;
@@ -190,7 +185,6 @@
             return path + 'Z';
         }
 
-        // Increase the number of neurons by 20%
         for (let i = 0; i < 24; i++) {
             neurons.push(createNeuron());
         }
