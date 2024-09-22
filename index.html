@@ -1,58 +1,203 @@
 <!DOCTYPE html>
-<html>
-	<head>
-		<meta charset= "utf-8">
-		<title>Ahmed Moselhi</title>
-		<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-		<link rel="stylesheet" href="style.css" type="text/css">
-		<script src="pre.js"></script>
-	</head>
-	<body>		
-		<div class="container">
-			<div class="row">
-				<div class="col-4">
-					<br></br>
-					<img class="picture" src="pic.png"><br> 
-					<h4>Developing.....</h4>
-					<p>Neuroscience & Immunology, Starupts @ MaRS 
-						Email: <a href="mailto:ahmedmoselhi7@gmail.com">ahmedmoselhi7@gmail.com</a> 
-						<br>
-						Twitter: <a href="https://twitter.com/AhmedMoselhi2">@AhmedMoselhi2</a>
-					</p>
-				</div>
-				<div class="col-7">
-					<br></br>
-                    <h4>Now</h4>
-                    <p>
-                        <ul>
-                            <li>Undergoing Neurogenesis.</li>
-                        </ul>
-                    </p>
-                    <br>
-                    <h4>Projects</h4>
-                    <p>
-                        <ul>
-							<li><b>Segmentation clock go brrrrr.:</b> .</li>
-                        </ul>
-                    </p>
-					<br>
-					<h4>Other Stuff</h4>
-                    <p>
-                        <ul>
-							<li>Limb buds budding.</li>
-                        </ul>
-                    </p>
-					<br>
-				</div>
-				<div class="col-1">
-					<br></br>
-					<p>
-					<a href="blog.html">Blog(WIP)</a>
-					<a href="books.html">Books(WIP)</a>
-					<a href="standup.html">Jokes(WIP)</a>
-					</p>
-				</div>
-			</div>
-		</div>
-	</body>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ahmed Moselhi - Personal Website</title>
+    <style>
+        body {
+            margin: 0;
+            min-height: 300vh;
+            font-family: Arial, sans-serif;
+            background-color: #FFF5E6; /* Cream background */
+            color: #800000; /* Maroon text */
+        }
+        svg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+        .neuron-path {
+            fill: none;
+            stroke: rgba(128, 0, 0, 0.3); /* Match nucleus color */
+        }
+        .soma {
+            fill: rgba(128, 0, 0, 0.2);
+        }
+        .nucleus {
+            fill: rgba(128, 0, 0, 0.3);
+        }
+        .synapse {
+            fill: rgba(128, 0, 0, 0.4);
+        }
+        .content {
+            position: relative;
+            z-index: 1;
+            padding: 20px;
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: rgba(255, 245, 230, 0.8);
+        }
+        .profile-photo {
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin: 0 auto 20px;
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <svg id="neuron-container"></svg>
+    
+    <div class="content">
+        
+        <h1>Ahmed Moselhi</h1>
+        
+        <h2>Where I'm at</h2>
+        <p>Biotech MSc Student @ Biosystems Science and Engineering, ETH Zurich, Basel</p>
+        <p>Email: <a href="mailto:amoselhi@ethz.ch">amoselhi@ethz.ch</a></p>
+        <p>Twitter: <a href="https://twitter.com/AhmedMoselhi2">@AhmedMoselhi2</a></p>
+        
+        <h3>Now</h3>
+        <ul>
+            <li>Learning math, code & engineering (applied to biology) @ ETHZ</li>
+            <li>Thinking a lot about development and regeneration</li>
+        </ul>
+        
+        <h3>Previously</h3>
+        <ul>
+            <li>In-vitro and In-silico CRISPR screens on neural precursors @ Sickkids, Toronto</li>
+            <li>Startup insights @ MaRS, Toronto</li>
+            <li>R&D intern @ Endogena Therapeutics, Toronto</li>
+            <li>Zebrafish somitogenesis and development @ EPFL, Lausanne</li>
+            <li>Immune interface with Gut-brain aixs @ Krembil brain institute, Toronto</li>
+            <li>Neuroscience & Immunology @ University of Toronto</li>
+        </ul>
+        
+        <h3>Other Stuff</h3>
+        <ul>
+            <li>Blog in the works.</li>
+        </ul>
+
+    </div>
+
+    <script>
+        const svg = document.getElementById('neuron-container');
+        const neurons = [];
+
+        function createNeuron() {
+            const group = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+            const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+            const soma = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+            const nucleus = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+
+            path.classList.add('neuron-path');
+            soma.classList.add('soma');
+            nucleus.classList.add('nucleus');
+
+            group.appendChild(path);
+            group.appendChild(soma);
+            group.appendChild(nucleus);
+
+            // Add synapses
+            const synapses = [];
+            for (let i = 0; i < 3; i++) {
+                const synapse = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+                synapse.classList.add('synapse');
+                group.appendChild(synapse);
+                synapses.push(synapse);
+            }
+
+            svg.appendChild(group);
+
+            return {
+                group: group,
+                path: path,
+                soma: soma,
+                nucleus: nucleus,
+                synapses: synapses,
+                x: Math.random() * window.innerWidth,
+                y: Math.random() * window.innerHeight,
+                amplitude: Math.random() * 100 + 50,
+                frequency: Math.random() * 0.01 + 0.005,
+                axonWidth: Math.random() * 5 + 10, // 10-15px thickness
+                direction: Math.random() * Math.PI * 2
+            };
+        }
+
+        function updateNeurons() {
+            const scrollY = window.scrollY;
+            const totalHeight = document.documentElement.scrollHeight;
+            const viewportHeight = window.innerHeight;
+            const scrollPercentage = scrollY / (totalHeight - viewportHeight);
+            const maxHeight = totalHeight * 1.5;
+            
+            neurons.forEach(neuron => {
+                // Update soma and nucleus (not clipped)
+                const somaSize = 27 + Math.sin(scrollY * 0.000001) * 0.05; // Slightly reduced size
+                const somaPath = generateIrregularShape(neuron.x, neuron.y, somaSize, 8);
+                neuron.soma.setAttribute('d', somaPath);
+
+                const nucleusSize = somaSize * 0.4;
+                neuron.nucleus.setAttribute('cx', neuron.x);
+                neuron.nucleus.setAttribute('cy', neuron.y);
+                neuron.nucleus.setAttribute('r', nucleusSize);
+
+                // Update axon
+                let d = `M${neuron.x} ${neuron.y}`; // Start from the center (nucleus)
+                const length = maxHeight * 0.6; // Increased length
+                for (let i = 0; i <= length; i += 20) {
+                    const angle = neuron.direction + Math.sin(i * neuron.frequency) * 0.5;
+                    const x = neuron.x + Math.cos(angle) * i;
+                    const y = neuron.y + Math.sin(angle) * i;
+                    d += ` L${x} ${y}`;
+                }
+                neuron.path.setAttribute('d', d);
+                neuron.path.style.strokeWidth = neuron.axonWidth;
+
+                // Clip axon
+                const clipHeight = scrollPercentage * maxHeight;
+                neuron.path.style.clipPath = `polygon(0 0, 100% 0, 100% ${clipHeight}px, 0 ${clipHeight}px)`;
+
+                // Update synapses (not clipped)
+                neuron.synapses.forEach((synapse, index) => {
+                    const angle = (index / neuron.synapses.length) * Math.PI * 2 + neuron.direction;
+                    const distance = somaSize * 1.2;
+                    const sx = neuron.x + Math.cos(angle) * distance;
+                    const sy = neuron.y + Math.sin(angle) * distance;
+                    synapse.setAttribute('cx', sx);
+                    synapse.setAttribute('cy', sy);
+                    synapse.setAttribute('r', 3);
+                });
+            });
+        }
+
+        function generateIrregularShape(cx, cy, size, points) {
+            let path = `M ${cx + size} ${cy} `;
+            for (let i = 1; i <= points; i++) {
+                const angle = (i / points) * Math.PI * 2;
+                const r = size * (0.8 + Math.random() * 0.4);
+                const x = cx + Math.cos(angle) * r;
+                const y = cy + Math.sin(angle) * r;
+                path += `L ${x} ${y} `;
+            }
+            return path + 'Z';
+        }
+
+        // Increase the number of neurons by 20%
+        for (let i = 0; i < 24; i++) {
+            neurons.push(createNeuron());
+        }
+
+        window.addEventListener('scroll', updateNeurons);
+        window.addEventListener('resize', updateNeurons);
+        updateNeurons();
+    </script>
+</body>
 </html>
