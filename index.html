@@ -50,13 +50,33 @@
             margin: 0 auto 20px;
             display: block;
         }
+        .gallery {
+            padding: 20px;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        .gallery h3 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 10px;
+        }
+        .gallery-grid img {
+            width: 100%;
+            height: auto;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
     </style>
 </head>
 <body>
     <svg id="neuron-container"></svg>
     
     <div class="content">
-      <img src="pic.png" alt="Ahmed Moselhi" class="profile-photo">
+        <img src="pic.png" alt="Ahmed Moselhi" class="profile-photo">
         
         <h1>Ahmed Moselhi</h1>
         
@@ -67,25 +87,21 @@
         
         <h3>Now</h3>
         <ul>
-            <li>Learning math, code & engineering (applied to biology) @ ETHZ</li>
-            <li>*Redacted* research assistant @ D-BSSE @ ETHZ</li>
+            <li>Learning math, code & engineering (applied to biology) @ D-BSSE, ETHZ</li>
+            <li>*Redacted* research assistant @ D-BSSE, ETHZ</li>
             <li>Thinking a lot about development and regeneration</li>
         </ul>
         
         <h3>Previously</h3>
         <ul>
-            <li>In-vitro and In-silico CRISPR screens on neural precursors @ Sickkids, Toronto</li>
-            <li>Life Science Startup insights @ MaRS, Toronto</li>
+            <li>In-vitro and in-silico CRISPR screens on neural precursors @ Sickkids, Toronto</li>
+            <li>Life science startup insights @ MaRS, Toronto</li>
             <li>Macular degeneration R&D intern @ Endogena Therapeutics, Toronto</li>
             <li>Zebrafish somitogenesis and development @ EPFL, Lausanne</li>
             <li>Immune interface with Gut-brain axis @ Krembil brain institute, Toronto</li>
             <li>Neuroscience & Immunology @ University of Toronto</li>
         </ul>
         
-        <h3>Other Stuff</h3>
-        <ul>
-            <li>Blog in the works.</li>
-        </ul>
 
     </div>
 
