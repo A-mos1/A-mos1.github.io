@@ -194,10 +194,6 @@
       }
       const seed = Math.floor(Math.random() * 0xffffffff);
       const rng = createRng(seed);
-      const MASK_RES_X = 90;   // horizontal resolution of mask grid
-      const MASK_RES_Y = 180;  // vertical resolution of mask grid
-      const tissueMask = new Array(MASK_RES_X * MASK_RES_Y); // boolean per cell
-      const NOISE_SCALE = 2 + rng() * 3; // randomize "granularity" of shapes per load
 
       // --- Global shape parameters (vary per refresh) ---
       const SHAPE_MODE  = Math.floor(rng() * 8);          // 0..5
@@ -673,7 +669,7 @@
         // define where along the scroll the animation should start & end
         // 0 = very top, 1 = very bottom
         const ANIM_START = 0.0; // 15% scroll before animation begins
-        const ANIM_END   = 0.7;  // fully formed tissue at very bottom
+        const ANIM_END   = 0.0;  // fully formed tissue at very bottom
 
         let lastProgress = -1;
         function update() {
