@@ -1,216 +1,676 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ahmed Moselhi - Personal Website</title>
-    <style>
-        body {
-            margin: 0;
-            min-height: 300vh;
-            font-family: Arial, sans-serif;
-            background-color: #FFF5E6; /* Cream background */
-            color: #800000; /* Maroon text */
-        }
-        svg {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: -1;
-        }
-        .neuron-path {
-            fill: none;
-            stroke: rgba(128, 0, 0, 0.3); /* Match nucleus color */
-        }
-        .soma {
-            fill: rgba(128, 0, 0, 0.2);
-        }
-        .nucleus {
-            fill: rgba(128, 0, 0, 0.3);
-        }
-        .synapse {
-            fill: rgba(128, 0, 0, 0.4);
-        }
-        .content {
-            position: relative;
-            z-index: 1;
-            padding: 20px;
-            max-width: 800px;
-            margin: 0 auto;
-            background-color: rgba(255, 245, 230, 0.8);
-        }
-        .profile-photo {
-            width: 200px;
-            height: 200px;
-            border-radius: 50%;
-            object-fit: cover;
-            margin: 0 auto 20px;
-            display: block;
-        }
-        .gallery {
-            padding: 20px;
-            max-width: 1000px;
-            margin: 0 auto;
-        }
-        .gallery h3 {
-            text-align: center;
-            margin-bottom: 20px;
-        }
-        .gallery-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 10px;
-        }
-        .gallery-grid img {
-            width: 100%;
-            height: auto;
-            border-radius: 10px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ahmed Moselhi - Personal Website</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 250vh; /* gives enough scroll range for the morphogenesis */
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: #FFF5E6; /* deep navy */
+      color: #800000;
+    }
+
+    a {
+      color: #38bdf8;
+      text-decoration: none;
+    }
+    a:hover {
+      text-decoration: underline;
+    }
+
+    /* full-screen procedural tissue background */
+    #tissue-bg {
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -1;
+      display: block;
+    }
+
+    .content {
+      position: relative;
+      z-index: 1;
+      padding: 2.5rem 1.5rem 3.5rem;
+      max-width: 880px;
+      margin: 2.5rem auto 4rem;
+      border-radius: 1.5rem;
+      background: rgba(230, 225, 217, 0.895); /* slate/indigo glass */
+      box-shadow: 0 25px 80px rgba(0, 0, 0, 0.6);
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      backdrop-filter: blur(18px);
+    }
+
+    .profile-photo {
+      width: 170px;
+      height: 170px;
+      border-radius: 50%;
+      object-fit: cover;
+      margin: 0 auto 1.5rem;
+      display: block;
+      border: 3px solid rgba(148, 163, 184, 0.7);
+      box-shadow: 0 12px 35px rgba(15, 23, 42, 0.8);
+    }
+
+    h1 {
+      font-size: clamp(2.2rem, 4vw, 2.8rem);
+      margin: 0 0 0.5rem;
+      text-align: center;
+    }
+
+    h2 {
+      margin-top: 2rem;
+      font-size: 1.4rem;
+      border-bottom: 1px solid rgba(148, 163, 184, 0.3);
+      padding-bottom: 0.35rem;
+    }
+
+    h3 {
+      margin-top: 1.75rem;
+      font-size: 1.2rem;
+    }
+
+    p,
+    li {
+      line-height: 1.6;
+      font-size: 0.98rem;
+    }
+
+    ul {
+      padding-left: 1.3rem;
+      margin-top: 0.4rem;
+    }
+
+    .tagline {
+      text-align: center;
+      margin-bottom: 0.75rem;
+      font-size: 0.95rem;
+      color: #cbd5f5;
+    }
+
+    .contact {
+      text-align: center;
+      margin-bottom: 1.5rem;
+      font-size: 0.95rem;
+    }
+
+    .contact p {
+      margin: 0.15rem 0;
+    }
+  </style>
 </head>
 <body>
-    <svg id="neuron-container"></svg>
-    
-    <div class="content">
-        <img src="pic.png" alt="Ahmed Moselhi" class="profile-photo">
-        
-        <h1>Hi, I'm Ahmed</h1>
-        
-        <h2>Where I'm at</h2>
-        <p>MSc Student @ Biosystems Science and Engineering, ETH Zurich, Basel</p>
-        <p>Email: <a href="mailto:amoselhi@ethz.ch">amoselhi@ethz.ch</a></p>
-        <p>Twitter: <a href="https://twitter.com/AhmedMoselhi2">@AhmedMoselhi2</a></p>
-        
-        <h3>Now</h3>
-        <ul>
-            <li>Intern @ IHB, Basel</li>
-            <li>Learning math, code & engineering (applied to biology) @ DBSSE, Basel</li>
-        </ul>
-        
-        <h3>Previously</h3>
-        <ul>
-            <li>Programming neurons and innervating organs-on-chip @ IHB (Roche), Basel</li>
-            <li>In-vivo and In-vitro CRISPR screens in *****-carcinoma @ DBSSE, Basel</li>
-            <li>In-vitro and in-silico CRISPR screens on neural precursors @ Sickkids, Toronto</li>
-            <li>Life science startup insights @ MaRS, Toronto</li>
-            <li>Macular degeneration R&D intern @ Endogena Therapeutics, Toronto</li>
-            <li>Zebrafish somitogenesis and development @ EPFL, Lausanne</li>
-            <li>Immune interface with Gut-brain axis @ Krembil brain institute, Toronto</li>
-            <li>Neuroscience & Immunology @ University of Toronto</li>
-        </ul>
-        
+  <canvas id="tissue-bg"></canvas>
 
+  <div class="content">
+    <img src="pic.png" alt="Ahmed Moselhi" class="profile-photo" />
+
+    <h1>Hi, I'm Ahmed</h1>
+
+
+    <div class="contact">
+      <p>MSc Student @ Biosystems Science and Engineering, ETH Zurich, Basel</p>
+      <p>
+        Email:
+        <a href="mailto:amoselhi@ethz.ch">amoselhi@ethz.ch</a>
+      </p>
+      <p>
+        Twitter:
+        <a href="https://twitter.com/AhmedMoselhi2" target="_blank" rel="noopener">@AhmedMoselhi2</a>
+      </p>
     </div>
 
-    <script>
-        const svg = document.getElementById('neuron-container');
-        const neurons = [];
+    <h2>Where I'm at</h2>
+    <p>MSc student in Biosystems Science and Engineering (DBSSE), ETH Zurich (Basel).</p>
 
-        function createNeuron() {
-            const group = document.createElementNS('http://www.w3.org/2000/svg', 'g');
-            const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-            const soma = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-            const nucleus = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+    <h3>Now</h3>
+    <ul>
+      <li>Intern @ IHB, Basel</li>
+      <li>Learning math, code &amp; engineering (applied to biology) @ DBSSE, Basel</li>
+    </ul>
 
-            path.classList.add('neuron-path');
-            soma.classList.add('soma');
-            nucleus.classList.add('nucleus');
+    <h3>Previously</h3>
+    <ul>
+      <li>Programming neurons and innervating organs-on-chip @ IHB (Roche), Basel</li>
+      <li>In-vivo and in-vitro CRISPR screens in *****-carcinoma @ DBSSE, Basel</li>
+      <li>In-vitro and in-silico CRISPR screens on neural precursors @ Sickkids, Toronto</li>
+      <li>Life science startup insights @ MaRS, Toronto</li>
+      <li>Macular degeneration R&amp;D intern @ Endogena Therapeutics, Toronto</li>
+      <li>Zebrafish somitogenesis and development @ EPFL, Lausanne</li>
+      <li>Immune interface with gut-brain axis @ Krembil Brain Institute, Toronto</li>
+      <li>Neuroscience &amp; Immunology @ University of Toronto</li>
+    </ul>
+  </div>
 
-            group.appendChild(path);
-            group.appendChild(soma);
-            group.appendChild(nucleus);
+  <script>
+    (function() {
+      const canvas = document.getElementById('tissue-bg');
+      const ctx = canvas.getContext('2d');
 
-            const synapses = [];
-            for (let i = 0; i < 3; i++) {
-                const synapse = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-                synapse.classList.add('synapse');
-                group.appendChild(synapse);
-                synapses.push(synapse);
+      let width = window.innerWidth;
+      let height = window.innerHeight;
+      let pixelRatio = window.devicePixelRatio || 1;
+
+      const cells = [];    // { u, v, gen, birthIndex, radius0, centroid, inShape }
+      const polygons = []; // [{u,v}[] per cell]
+
+      // Grid controls cell density
+      const GRID_X = 45;
+      const GRID_Y = 15;
+
+      // --- RNG ---
+      function createRng(seed) {
+        let s = seed >>> 0;
+        return function rand() {
+          s = (s * 1664525 + 1013904223) >>> 0;
+          return s / 0x100000000;
+        };
+      }
+      const seed = Math.floor(Math.random() * 0xffffffff);
+      const rng = createRng(seed);
+
+      // --- Global shape parameters (vary per refresh) ---
+      const SHAPE_MODE  = Math.floor(rng() * 8);          // 0..5
+      const SHAPE_LOBES = 2 + Math.floor(rng() * 4);      // 2..5
+      const SHAPE_PHASE = rng() * Math.PI * 2;            // rotation
+      const SHAPE_BUMP  = 0.08 + rng() * 0.07;            // lobe amplitude
+      const SHAPE_ORIENT  = rng() * Math.PI * 2;        // rotation for elongated shapes
+      const SHAPE_ECC     = 0.3 + rng() * 0.5;          // how “stretched” some shapes are
+      const SHAPE_RING_IN = 0.14 + rng() * 0.08;        // inner radius for rings
+      const SHAPE_RING_OUT= 0.32 + rng() * 0.08;        // outer radius for rings
+
+      // --- 1. Generate near-uniform cell centers on a jittered grid ---
+      function generateCellCenters() {
+        cells.length = 0;
+
+        const jitterX = 0.4 / GRID_X;
+        const jitterY = 0.4 / GRID_Y;
+
+        for (let gx = 0; gx < GRID_X; gx++) {
+          for (let gy = 0; gy < GRID_Y; gy++) {
+            const uBase = (gx + 0.5) / GRID_X;
+            const vBase = (gy + 0.5) / GRID_Y;
+
+            let u = uBase + (rng() - 0.5) * jitterX;
+            let v = vBase + (rng() - 0.5) * jitterY;
+
+            // mild warp so we don't get a perfect rectangle of cells
+            const du = u - 0.5;
+            const dv = v - 0.5;
+            const r = Math.sqrt(du * du + dv * dv);
+            const theta = Math.atan2(dv, du);
+            let rWarped = r;
+
+            if (SHAPE_MODE === 1) {
+              // multilobed organoid-ish
+              const warp =
+                SHAPE_BUMP * Math.sin(SHAPE_LOBES * theta + SHAPE_PHASE);
+              rWarped = r * (1 + warp * 0.4);
+            } else if (SHAPE_MODE === 2) {
+              // elongated plate
+              rWarped = r * (1 + 0.25 * Math.cos(2 * theta));
+            } else {
+              // gentle generic warp
+              const warp = 0.05 * Math.sin(4 * theta + SHAPE_PHASE);
+              rWarped = r * (1 + warp * 0.3);
             }
 
-            svg.appendChild(group);
+            u = 0.5 + rWarped * Math.cos(theta);
+            v = 0.5 + rWarped * Math.sin(theta);
 
-            return {
-                group: group,
-                path: path,
-                soma: soma,
-                nucleus: nucleus,
-                synapses: synapses,
-                x: Math.random() * window.innerWidth,
-                y: Math.random() * window.innerHeight,
-                amplitude: Math.random() * 100 + 50,
-                frequency: Math.random() * 0.01 + 0.005,
-                axonWidth: Math.random() * 5 + 10, 
-                direction: Math.random() * Math.PI * 2
-            };
-        }
+            // keep within [0,1]
+            u = Math.max(0.02, Math.min(0.98, u));
+            v = Math.max(0.02, Math.min(0.98, v));
 
-        function updateNeurons() {
-            const scrollY = window.scrollY;
-            const totalHeight = document.documentElement.scrollHeight;
-            const viewportHeight = window.innerHeight;
-            const scrollPercentage = scrollY / (totalHeight - viewportHeight);
-            const maxHeight = totalHeight * 1.5;
-            
-            neurons.forEach(neuron => {
-                const somaSize = 27 + Math.sin(scrollY * 0.000001) * 0.05;
-                const somaPath = generateIrregularShape(neuron.x, neuron.y, somaSize, 8);
-                neuron.soma.setAttribute('d', somaPath);
-
-                const nucleusSize = somaSize * 0.4;
-                neuron.nucleus.setAttribute('cx', neuron.x);
-                neuron.nucleus.setAttribute('cy', neuron.y);
-                neuron.nucleus.setAttribute('r', nucleusSize);
-
-                let d = `M${neuron.x} ${neuron.y}`; 
-                const length = maxHeight * 0.6;
-                for (let i = 0; i <= length; i += 20) {
-                    const angle = neuron.direction + Math.sin(i * neuron.frequency) * 0.5;
-                    const x = neuron.x + Math.cos(angle) * i;
-                    const y = neuron.y + Math.sin(angle) * i;
-                    d += ` L${x} ${y}`;
-                }
-                neuron.path.setAttribute('d', d);
-                neuron.path.style.strokeWidth = neuron.axonWidth;
-
-                const clipHeight = scrollPercentage * maxHeight;
-                neuron.path.style.clipPath = `polygon(0 0, 100% 0, 100% ${clipHeight}px, 0 ${clipHeight}px)`;
-
-                neuron.synapses.forEach((synapse, index) => {
-                    const angle = (index / neuron.synapses.length) * Math.PI * 2 + neuron.direction;
-                    const distance = somaSize * 1.2;
-                    const sx = neuron.x + Math.cos(angle) * distance;
-                    const sy = neuron.y + Math.sin(angle) * distance;
-                    synapse.setAttribute('cx', sx);
-                    synapse.setAttribute('cy', sy);
-                    synapse.setAttribute('r', 3);
-                });
+            cells.push({
+              u,
+              v,
+              gen: 0,
+              birthIndex: 0,
+              radius0: 0,
+              centroid: { u: 0, v: 0 },
+              inShape: true
             });
+          }
+        }
+      }
+
+      // --- 2. Exact Voronoi via half-plane clipping ---
+      function clipPolygonWithHalfPlane(poly, nx, ny, c) {
+        const out = [];
+        if (!poly.length) return out;
+
+        function signedDist(p) {
+          return p.u * nx + p.v * ny - c;
         }
 
-        function generateIrregularShape(cx, cy, size, points) {
-            let path = `M ${cx + size} ${cy} `;
-            for (let i = 1; i <= points; i++) {
-                const angle = (i / points) * Math.PI * 2;
-                const r = size * (0.8 + Math.random() * 0.4);
-                const x = cx + Math.cos(angle) * r;
-                const y = cy + Math.sin(angle) * r;
-                path += `L ${x} ${y} `;
-            }
-            return path + 'Z';
+        const n = poly.length;
+        for (let i = 0; i < n; i++) {
+          const curr = poly[i];
+          const next = poly[(i + 1) % n];
+          const dCurr = signedDist(curr);
+          const dNext = signedDist(next);
+
+          const insideCurr = dCurr <= 0;
+          const insideNext = dNext <= 0;
+
+          if (insideCurr && insideNext) {
+            out.push(next);
+          } else if (insideCurr && !insideNext) {
+            const t = dCurr / (dCurr - dNext);
+            out.push({
+              u: curr.u + (next.u - curr.u) * t,
+              v: curr.v + (next.v - curr.v) * t
+            });
+          } else if (!insideCurr && insideNext) {
+            const t = dCurr / (dCurr - dNext);
+            out.push({
+              u: curr.u + (next.u - curr.u) * t,
+              v: curr.v + (next.v - curr.v) * t
+            });
+            out.push(next);
+          }
+        }
+        return out;
+      }
+
+      function computeVoronoiPolygons() {
+        polygons.length = 0;
+
+        const baseBox = [
+          { u: 0, v: 0 },
+          { u: 1, v: 0 },
+          { u: 1, v: 1 },
+          { u: 0, v: 1 }
+        ];
+
+        for (let i = 0; i < cells.length; i++) {
+          const si = cells[i];
+          let poly = baseBox.map((p) => ({ u: p.u, v: p.v }));
+
+          for (let j = 0; j < cells.length; j++) {
+            if (j === i) continue;
+            const sj = cells[j];
+
+            const nx = sj.u - si.u;
+            const ny = sj.v - si.v;
+            const c = (sj.u * sj.u + sj.v * sj.v - si.u * si.u - si.v * si.v) / 2;
+
+            poly = clipPolygonWithHalfPlane(poly, nx, ny, c);
+            if (!poly.length) break;
+          }
+
+          polygons.push(poly);
+        }
+      }
+
+      // --- 3. Birth order, tissue mask & global radius0 ---
+      function polygonCentroid(verts) {
+        let cx = 0,
+          cy = 0,
+          a = 0;
+        const n = verts.length;
+        for (let i = 0; i < n; i++) {
+          const p = verts[i];
+          const q = verts[(i + 1) % n];
+          const cross = p.u * q.v - q.u * p.v;
+          a += cross;
+          cx += (p.u + q.u) * cross;
+          cy += (p.v + q.v) * cross;
+        }
+        if (Math.abs(a) < 1e-6) {
+          cx = 0;
+          cy = 0;
+          for (const v of verts) {
+            cx += v.u;
+            cy += v.v;
+          }
+          cx /= n;
+          cy /= n;
+          return { u: cx, v: cy };
+        }
+        a *= 0.5;
+        cx /= 6 * a;
+        cy /= 6 * a;
+        return { u: cx, v: cy };
+      }
+
+      // Shape modes:
+      // 0 – round patch
+      // 1 – multilobed organoid
+      // 2 – elongated plate
+      // 3 – horizontal band / stripe
+      // 4 – ring / donut
+      // 5 – two-bud shape
+      // Simple fractal-ish noise to vary shape locally
+    function fbmNoise(x, y) {
+      let v = 0;
+      v += 0.5   * Math.sin(x + 1.7 * y);
+      v += 0.25  * Math.sin(2.1 * x - 0.9 * y);
+      v += 0.125 * Math.sin(4.3 * x + 3.1 * y);
+      // map from roughly [-0.875, 0.875] into [0, 1]
+      return v * 0.5 + 0.5;
+    }
+
+      function insideShape(u, v) {
+        const du = u - 0.5;
+        const dv = v - 0.5;
+        const r = Math.sqrt(du * du + dv * dv);
+        const theta = Math.atan2(dv, du);
+
+        if (SHAPE_MODE === 0) {
+          // round patch
+          return r < 0.43;
+        } else if (SHAPE_MODE === 1) {
+          // multilobed organoid
+          const baseR = 0.4;
+          const bumpMain =
+            SHAPE_BUMP * Math.sin(SHAPE_LOBES * theta + SHAPE_PHASE);
+          const bumpSmall = 0.03 * Math.sin(9 * theta + 2.1);
+          const boundary = baseR + bumpMain + bumpSmall;
+          return r < boundary;
+        } else if (SHAPE_MODE === 2) {
+          // elongated plate
+          const a = 0.5; // semi-major
+          const b = 0.23; // semi-minor
+          const x = du;
+          const y = dv * (1 + 0.3 * Math.sin(2 * theta));
+          return x * x / (a * a) + y * y / (b * b) < 1.0;
+        } else if (SHAPE_MODE === 3) {
+          // horizontal band / stripe
+          const bandCenter = 0.5;
+          const bandHalf = 0.22;
+          const wiggle =
+            0.05 * Math.sin(3 * (u - 0.5) * Math.PI * 2 + SHAPE_PHASE);
+          const yMin = bandCenter - bandHalf + wiggle;
+          const yMax = bandCenter + bandHalf + wiggle;
+          return v > yMin && v < yMax;
+        } else if (SHAPE_MODE === 4) {
+          // ring / donut
+          const innerR = 0.18;
+          const outerR =
+            0.38 + 0.04 * Math.sin(4 * theta + SHAPE_PHASE);
+          return r > innerR && r < outerR;
+        } else if (SHAPE_MODE === 4) {
+          // ring / donut (now using the extra params if you added them)
+          const innerR = SHAPE_RING_IN;
+          const outerR = SHAPE_RING_OUT + 0.04 * Math.sin(4 * theta + SHAPE_PHASE);
+          return r > innerR && r < outerR;
+        } else if (SHAPE_MODE === 5) {
+          // two-bud shape (your original “else”)
+          const c1 = { u: 0.42, v: 0.52 };
+          const c2 = { u: 0.58, v: 0.48 };
+          const d1 = Math.hypot(u - c1.u, v - c1.v);
+          const d2 = Math.hypot(u - c2.u, v - c2.v);
+          const rMin = Math.min(d1, d2);
+          return rMin < 0.3;
+        } else if (SHAPE_MODE === 6) {
+          // crescent / C-shape
+          const outer = r < 0.45;
+          const innerHole = (u - 0.35) ** 2 + dv * dv < 0.20 ** 2; // off-center inner circle
+          return outer && !innerHole;
+        } else if (SHAPE_MODE === 7) {
+          // tilted, skinny strip with wiggle (kind of “ligament”)
+          // rotate coords by SHAPE_ORIENT
+          const cosA = Math.cos(SHAPE_ORIENT);
+          const sinA = Math.sin(SHAPE_ORIENT);
+          const x = du * cosA - dv * sinA;
+          const y = du * sinA + dv * cosA;
+          const half = 0.18;
+          const wiggle = 0.05 * Math.sin(6 * x * Math.PI);
+          return Math.abs(y + wiggle) < half;
+        } else if (SHAPE_MODE === 8) {
+          // very lobey / starry blob
+          const baseR = 0.35 + 0.06 * Math.sin(2 * theta + SHAPE_PHASE);
+          const highFreq = 0.04 * Math.sin(9 * theta + 1.3);
+          const veryHigh = 0.02 * Math.sin(17 * theta + 0.7);
+          const boundary = baseR + highFreq + veryHigh;
+          return r < boundary;
+        } else {
+          // fallback – simple circle so we never get "no tissue"
+          return r < 0.45;
         }
 
-        for (let i = 0; i < 24; i++) {
-            neurons.push(createNeuron());
+      }
+
+      function assignBirthAndRadius() {
+        const centerU = 0.5;
+        const centerV = 0.5;
+        const idxs = cells.map((_, i) => i);
+        const radii = [];
+
+        idxs.sort((a, b) => {
+          const da = Math.hypot(cells[a].u - centerU, cells[a].v - centerV);
+          const db = Math.hypot(cells[b].u - centerU, cells[b].v - centerV);
+          return da - db;
+        });
+
+        for (let rank = 0; rank < idxs.length; rank++) {
+          const i = idxs[rank];
+          const cell = cells[i];
+          const poly = polygons[i];
+          const cent = polygonCentroid(poly);
+
+          cell.centroid = cent;
+          cell.inShape = insideShape(cent.u, cent.v);
+
+          // estimate natural radius (for median)
+          let maxDist = 0;
+          for (const v of poly) {
+            const dx = v.u - cent.u;
+            const dy = v.v - cent.v;
+            const d = Math.sqrt(dx * dx + dy * dy);
+            if (d > maxDist) maxDist = d;
+          }
+          radii.push(maxDist);
+
+          cell.birthIndex = rank;
+          cell.gen = Math.floor(rank / 6); // controls color steps
         }
 
-        window.addEventListener('scroll', updateNeurons);
-        window.addEventListener('resize', updateNeurons);
-        updateNeurons();
-    </script>
+        radii.sort((a, b) => a - b);
+        const median = radii[Math.floor(radii.length / 2)] || 0.05;
+        const baseRadius = median * 0.32; // tweak for cell size
+
+        for (const c of cells) {
+          c.radius0 = baseRadius;
+        }
+      }
+
+      function buildRoundedPolygonPath(ctx, poly, width, height) {
+        const n = poly.length;
+        if (n === 0) return;
+
+        // Work in canvas coordinates
+        function toXY(p) {
+          return { x: p.u * width, y: p.v * height };
+        }
+
+        // Start at midpoint between last and first
+        const last = toXY(poly[n - 1]);
+        const first = toXY(poly[0]);
+        let prevMidX = (last.x + first.x) * 0.5;
+        let prevMidY = (last.y + first.y) * 0.5;
+
+        ctx.beginPath();
+        ctx.moveTo(prevMidX, prevMidY);
+
+        for (let i = 0; i < n; i++) {
+          const curr = toXY(poly[i]);
+          const next = toXY(poly[(i + 1) % n]);
+
+          // Midpoint of current–next edge
+          const midX = (curr.x + next.x) * 0.5;
+          const midY = (curr.y + next.y) * 0.5;
+
+          // Quadratic curve: control point at vertex, end at midpoint
+          ctx.quadraticCurveTo(curr.x, curr.y, midX, midY);
+
+          prevMidX = midX;
+          prevMidY = midY;
+        }
+
+        ctx.closePath();
+      }
+
+
+      // --- 4. Canvas / scroll / render ---
+      function resizeCanvas() {
+        pixelRatio = window.devicePixelRatio || 1;
+        width = window.innerWidth;
+        height = window.innerHeight;
+        canvas.width = width * pixelRatio;
+        canvas.height = height * pixelRatio;
+        ctx.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0);
+      }
+
+      function getScrollProgress() {
+        const doc = document.documentElement;
+        const scrollTop = window.scrollY || doc.scrollTop || 0;
+        const maxScroll = doc.scrollHeight - window.innerHeight || 1;
+        let p = scrollTop / maxScroll;
+        if (p < 0) p = 0;
+        if (p > 1) p = 1;
+        return p;
+      }
+
+      function easeInOut(p) {
+        return p < 0.5 ? 2 * p * p : 1 - Math.pow(-2 * p + 2, 2) / 2;
+      }
+
+      function render(progress) {
+        ctx.clearRect(0, 0, width, height);
+
+        const bgGrad = ctx.createRadialGradient(
+          width * 0.5,
+          height * 0.3,
+          Math.min(width, height) * 0.1,
+          width * 0.5,
+          height * 0.5,
+          Math.max(width, height) * 0.9
+        );
+        bgGrad.addColorStop(0, "#FFF5E6");
+        bgGrad.addColorStop(1, "#FFF5E6");
+        ctx.fillStyle = bgGrad;
+        ctx.fillRect(0, 0, width, height);
+
+        if (!cells.length || !polygons.length) return;
+
+        const eased = easeInOut(progress);
+        const total = cells.length;
+        const maxBirth = total - 1;
+        const birthFloat = eased * maxBirth;
+
+        const sizeScale = Math.min(width, height);
+
+        for (let i = 0; i < total; i++) {
+          const cell = cells[i];
+          const poly = polygons[i];
+          if (!poly || poly.length < 3) continue;
+          if (!cell.inShape) continue;
+
+          const birthIdx = cell.birthIndex;
+          if (birthIdx > birthFloat + 2) continue;
+
+          const local = birthFloat - birthIdx;
+          let g = local / 2;
+          if (g < 0) g = 0;
+          if (g > 1) g = 1;
+          if (g <= 0) continue;
+
+          const cent = cell.centroid;
+          const cx = cent.u * width;
+          const cy = cent.v * height;
+
+          const r0 = cell.radius0 * sizeScale;
+          const radius = r0 * g;
+
+          // clip to polygon
+          ctx.save();
+          buildRoundedPolygonPath(ctx, poly, width, height);
+          ctx.clip();
+
+          // pastel-ish colour gradient
+          const hueBase = 210;
+          const hue = hueBase + cell.gen * 2;
+          const sat = 35;
+          const light = 65;
+
+          const grad = ctx.createRadialGradient(
+            cx, cy, 0,
+            cx, cy, radius
+          );
+
+          grad.addColorStop(
+            0,
+            `hsla(${hue}, ${sat}%, ${light + 1}%, 0.85)`
+          );
+          grad.addColorStop(
+            1,
+            `hsla(${hue}, ${sat}%, ${light - 1}%, 0.85)`
+          );
+
+          ctx.fillStyle = grad;
+          ctx.beginPath();
+          ctx.arc(cx, cy, radius, 0, Math.PI * 2);
+          ctx.fill();
+
+
+          ctx.restore();
+
+          // membrane border
+          if (g > 0.25) {
+            ctx.lineJoin = "round"; // still nice to keep
+            buildRoundedPolygonPath(ctx, poly, width, height);
+            ctx.lineWidth = 1.1;
+            ctx.strokeStyle = "rgba(15, 23, 42, 0.8)";
+            ctx.stroke();
+          }
+
+        }
+      }
+
+        // define where along the scroll the animation should start & end
+        // 0 = very top, 1 = very bottom
+        const ANIM_START = 0.10; // 15% scroll before animation begins
+        const ANIM_END   = 1.0;  // fully formed tissue at very bottom
+
+        let lastProgress = -1;
+        function update() {
+          const raw = getScrollProgress(); // 0..1 over entire page
+
+          // remap raw scroll [ANIM_START, ANIM_END] -> [0, 1]
+          let p = (raw - ANIM_START) / (ANIM_END - ANIM_START);
+          if (p < 0) p = 0;      // before ANIM_START => no development yet
+          if (p > 1) p = 1;      // at / after ANIM_END => fully developed
+
+          if (Math.abs(p - lastProgress) > 0.001) {
+            lastProgress = p;
+            render(p);
+          }
+        }
+
+
+      window.addEventListener("scroll", update);
+      window.addEventListener("resize", () => {
+        resizeCanvas();
+        update();
+      });
+
+      // init
+      resizeCanvas();
+      generateCellCenters();
+      computeVoronoiPolygons();
+      assignBirthAndRadius();
+      update();
+    })();
+  </script>
 </body>
 </html>
