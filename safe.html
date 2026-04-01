@@ -170,9 +170,6 @@
 
   <script>
     (function() {
-      function isMobile() {
-        return window.innerWidth <= 900;
-      }
       const canvas = document.getElementById('tissue-bg');
       const ctx = canvas.getContext('2d');
 
@@ -248,13 +245,7 @@
               rWarped = r * (1 + warp * 0.3);
             }
 
-            if (!isMobile()) {
-              // Desktop → push to right
-              u = 0.5 + rWarped * Math.cos(theta);
-            } else {
-              // Mobile → centered
-              u = 0.5 + rWarped * Math.cos(theta) * 0.9;
-            }
+            u = 0.5 + rWarped * Math.cos(theta);
             v = 0.5 + rWarped * Math.sin(theta);
 
             // keep within [0,1]
@@ -393,17 +384,14 @@
 
       function insideShape(u, v) {
         // Map the right half of the canvas (u in [0.5, 1]) into a logical [0, 1]
-        if (!isMobile()) {
-          // Desktop → keep organ on right half
-          const logicalU = (u - 0.5) * 2;
-          if (logicalU < 0 || logicalU > 1) {
-            return false;
-          }
-          u = logicalU;
-        } else {
-          // Mobile → use full width (centered)
-          u = u; // no shift
-      }
+        const logicalU = (u - 0.5) * 2;
+        if (logicalU < 0 || logicalU > 1) {
+          // left half of the screen: no tissue
+          return false;
+        }
+
+        // use logicalU for all the shape math
+        u = logicalU;
 
         const du = u - 0.5;
         const dv = v - 0.5;
