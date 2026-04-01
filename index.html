@@ -177,6 +177,7 @@
 
       let width = window.innerWidth;
       let height = window.innerHeight;
+      let aspect = width / height;
       let pixelRatio = window.devicePixelRatio || 1;
 
       const cells = [];    // { u, v, gen, birthIndex, radius0, centroid, inShape }
@@ -406,6 +407,9 @@
 
         const du = u - 0.5;
         const dv = v - 0.5;
+        if (isMobile()) {
+          du *= aspect;   // stretch horizontally on tall screens
+        } 
         const r = Math.sqrt(du * du + dv * dv);
         const theta = Math.atan2(dv, du);
 
@@ -570,6 +574,7 @@
         pixelRatio = window.devicePixelRatio || 1;
         width = window.innerWidth;
         height = window.innerHeight;
+        aspect = width / height;
         canvas.width = width * pixelRatio;
         canvas.height = height * pixelRatio;
         ctx.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0);
@@ -633,7 +638,10 @@
           const cx = cent.u * width;
           const cy = cent.v * height;
 
-          const r0 = cell.radius0 * sizeScale;
+          let r0 = cell.radius0 * sizeScale;
+          if (isMobile()) {
+            r0 *= aspect; // prevents visual squish
+          }
           const radius = r0 * g;
 
           // clip to polygon
