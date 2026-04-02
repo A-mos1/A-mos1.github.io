@@ -165,7 +165,7 @@
       <li>Neuroscience &amp; Immunology @ University of Toronto</li>
     </ul>
 
-    <h4>Fun!!!</h4>
+    <h4>Fun!!!!</h4>
     <ul>
     </ul>
   </div>
@@ -188,8 +188,8 @@
       const polygons = []; // [{u,v}[] per cell]
 
       // Grid controls cell density
-      const GRID_X = 45;
-      const GRID_Y = 15;
+      const GRID_X = isMobile() ? 22 : 45;
+      const GRID_Y = isMobile() ? 8  : 15;
 
       // --- RNG ---
       function createRng(seed) {
@@ -412,9 +412,8 @@
         let du = u - 0.5;
         let dv = v - 0.5;
         if (isMobile()) {
-          const scale = width / height;
-          du *= scale;
-        }
+          du *= aspect;   // stretch horizontally on tall screens
+        } 
         const r = Math.sqrt(du * du + dv * dv);
         const theta = Math.atan2(dv, du);
 
@@ -645,7 +644,7 @@
 
           let r0 = cell.radius0 * sizeScale;
           if (isMobile()) {
-             r0 *= Math.sqrt(width / height);// prevents visual squish
+            r0 *= aspect; // prevents visual squish
           }
           const radius = r0 * g;
 
