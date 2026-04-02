@@ -165,7 +165,7 @@
       <li>Neuroscience &amp; Immunology @ University of Toronto</li>
     </ul>
 
-    <h4>Fun!</h4>
+    <h4>...</h4>
     <ul>
     </ul>
   </div>
@@ -644,7 +644,8 @@
 
           let r0 = cell.radius0 * sizeScale;
           if (isMobile()) {
-            r0 *= aspect; // prevents visual squish
+            r0 *= aspect;
+            r0 *= 1.35; // prevents visual squish
           }
           const radius = r0 * g;
 
@@ -655,8 +656,8 @@
 
           // pastel-ish colour gradient
           const hueBase = 210;
-          const hue = hueBase + cell.gen * 2;
-          const sat = 35;
+          const hue = hueBase + cell.gen * (isMobile() ? 6 : 2);
+          const sat = isMobile() ? 55 : 35;
           const light = 65;
 
           const grad = ctx.createRadialGradient(
@@ -706,6 +707,12 @@
           let p = (raw - ANIM_START) / (ANIM_END - ANIM_START);
           if (p < 0) p = 0;      // before ANIM_START => no development yet
           if (p > 1) p = 1;      // at / after ANIM_END => fully developed
+
+          if (p === 1 && lastProgress !== 1) {
+            lastProgress = 1;
+            render(1);
+            return;
+          }
 
           if (Math.abs(p - lastProgress) > 0.001) {
             lastProgress = p;
