@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>The Cell Is Not a Photograph — Ahmed Moselhi</title>
+  <meta name="description" content="Why single-cell sequencing, pseudotime, and RNA velocity all describe snapshots of dead cells — and what actually measuring dynamics looks like." />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;1,400&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; }
+    :root {
+      --bg:        #FFF5E6;
+      --ink:       #800000;
+      --ink-faint: #a05050;
+      --rule:      rgba(128,0,0,0.15);
+      --code-bg:   rgba(128,0,0,0.06);
+      --max-w:     680px;
+    }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: 'Lora', Georgia, serif;
+      font-size: 1.05rem;
+      line-height: 1.75;
+    }
+    .topbar {
+      position: sticky; top: 0; z-index: 10;
+      background: var(--bg); border-bottom: 1px solid var(--rule);
+      padding: 0.6rem 1.5rem;
+      display: flex; justify-content: space-between; align-items: center;
+      font-size: 0.82rem; font-family: 'DM Mono', monospace;
+    }
+    .topbar a { color: var(--ink-faint); text-decoration: none; }
+    .topbar a:hover { color: var(--ink); text-decoration: underline; }
+    .topbar .site-name { font-weight: 500; color: var(--ink); }
+    article { max-width: var(--max-w); margin: 0 auto; padding: 3.5rem 1.5rem 6rem; }
+    h1 { font-size: clamp(1.8rem, 5vw, 2.6rem); font-weight: 600; line-height: 1.2; margin: 0 0 0.5rem; letter-spacing: -0.02em; }
+    .post-meta { font-family: 'DM Mono', monospace; font-size: 0.78rem; color: var(--ink-faint); margin-bottom: 2.8rem; letter-spacing: 0.03em; }
+    h2 { font-size: 1.35rem; font-weight: 600; margin: 2.8rem 0 0.6rem; letter-spacing: -0.01em; }
+    h3 { font-size: 1.1rem; font-weight: 600; margin: 2rem 0 0.4rem; font-style: italic; }
+    p { margin: 0 0 1.4rem; }
+    hr { border: none; border-top: 1px solid var(--rule); margin: 2.5rem 0; }
+    strong { font-weight: 600; }
+    em { font-style: italic; }
+    a { color: var(--ink); text-decoration: underline; text-decoration-color: var(--rule); text-underline-offset: 3px; }
+    a:hover { text-decoration-color: var(--ink); }
+    #progress-bar { position: fixed; top: 0; left: 0; height: 2px; background: var(--ink); width: 0%; z-index: 100; transition: width 0.1s linear; }
+    .post-nav {
+      max-width: var(--max-w); margin: 0 auto; padding: 2rem 1.5rem 4rem;
+      display: grid; grid-template-columns: 1fr auto 1fr; gap: 1rem; align-items: center;
+      border-top: 1px solid var(--rule);
+      font-family: 'DM Mono', monospace; font-size: 0.8rem;
+    }
+    .post-nav .nav-link { color: var(--ink-faint); text-decoration: none; }
+    .post-nav .nav-link:hover { color: var(--ink); }
+    .post-nav .nav-link.next { text-align: right; }
+    .post-nav .nav-home { text-align: center; color: var(--ink-faint); text-decoration: none; }
+    .post-nav .nav-home:hover { color: var(--ink); }
+
+    /* timescale figure */
+    .timescale-figure { margin: 2.5rem 0; }
+    .timescale-figure figcaption { font-family: 'DM Mono', monospace; font-size: 0.75rem; color: var(--ink-faint); margin-top: 0.7rem; letter-spacing: 0.02em; }
+
+    /* animated umap figure */
+    .umap-figure { margin: 2.5rem 0; text-align: center; }
+    .umap-figure figcaption { font-family: 'DM Mono', monospace; font-size: 0.75rem; color: var(--ink-faint); margin-top: 0.7rem; letter-spacing: 0.02em; text-align: center; }
+
+    @media (max-width: 600px) {
+      .post-nav { grid-template-columns: 1fr; text-align: center; }
+      .post-nav .nav-link.next { text-align: center; }
+    }
+  </style>
+</head>
+<body>
+
+<div id="progress-bar"></div>
+
+<nav class="topbar">
+  <span class="site-name"><a href="../index.html">Ahmed Moselhi</a></span>
+  <a href="../index.html">&#8592; Writing</a>
+</nav>
+
+<article>
+<h1>The Cell Is Not a Photograph</h1>
+<p class="post-meta">July 2025 &middot; single-cell genomics, measurement</p>
+
+<p>
+There is a certain kind of figure that shows up constantly in developmental biology papers. A UMAP embedding, that kidney-bean cloud of dots, with a color gradient swept across it from blue to yellow. The gradient is labeled "pseudotime." There is probably an arrow, drawn by the authors, indicating the direction of flow. The caption says something like: "Cells progress through a continuous trajectory of differentiation." And the whole thing rests, quietly, on an assumption that almost nobody stopped to examine: that you can infer what cells are <em>doing</em> by killing them and reading their contents.
+</p>
+<p>
+I want to be careful not to be too glib about this. Single-cell RNA sequencing has been genuinely transformative. It gave us cell type atlases, revealed tissue composition at a resolution that was unimaginable a decade ago, and discovered rare populations that bulk methods would never have found. But there is a specific way the field has convinced itself that computational inference is the same thing as measurement, and the gap between those two things is where a lot of confusion lives.
+</p>
+<p>
+The problem is structural. The most informative molecular measurements — sequencing, mass spectrometry, immunofluorescence — require you to destroy the cell to make them. You lyse it, fix it, or grind it up. You get one measurement per cell, ever. Every trajectory you draw through single-cell data is an inference across a population at one moment, not a recording of what any individual cell did. A continuum of states in a UMAP embedding could be a genuine developmental progression. It could also be a stable mixture of distinct cell types with intermediate-expressing doublets. Computationally, these are largely indistinguishable.
+</p>
+<p>
+There is also the averaging problem. A gene that flips on briefly in 5% of cells looks like a gentle 5% signal in bulk RNA-seq. A treatment that upregulates a gene in every single cell can, through Simpson's paradox, appear as a downregulation in bulk if the treatment simultaneously shifts subpopulation composition. The biology lives in the distribution; the mean discards the distribution.
+</p>
+<p>
+And then there is the timescale problem, which is less discussed and arguably the most important. Ion channels gate in microseconds. Calcium transients last milliseconds. Kinase signaling cascades propagate over minutes. Transcriptional responses take tens of minutes to hours. Epigenetic remodeling unfolds over hours to days. Developmental fate decisions play out across days to weeks. No single measurement technology spans this range. Every tool is a bandpass filter, and you are always implicitly choosing which slice of the temporal landscape to see.
+</p>
+
+<figure class="timescale-figure">
+  <svg viewBox="0 0 620 130" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:620px;">
+    <defs>
+      <linearGradient id="specGrad" x1="0" y1="0" x2="1" y2="0">
+        <stop offset="0%" stop-color="#c6e3f7"/>
+        <stop offset="30%" stop-color="#ffe0a0"/>
+        <stop offset="65%" stop-color="#ffc090"/>
+        <stop offset="100%" stop-color="#ffa0a0"/>
+      </linearGradient>
+    </defs>
+    <!-- Timeline axis -->
+    <rect x="30" y="55" width="560" height="8" rx="4" fill="url(#specGrad)" opacity="0.85"/>
+    <!-- Tick marks and labels -->
+    <!-- µs -->
+    <line x1="30" y1="53" x2="30" y2="68" stroke="#800000" stroke-width="1.5"/>
+    <text x="30" y="85" text-anchor="middle" font-family="'DM Mono',monospace" font-size="8.5" fill="#800000">µs</text>
+    <text x="30" y="96" text-anchor="middle" font-family="'DM Mono',monospace" font-size="7.5" fill="#a05050">ion channels</text>
+    <!-- ms -->
+    <line x1="110" y1="53" x2="110" y2="68" stroke="#800000" stroke-width="1.5"/>
+    <text x="110" y="85" text-anchor="middle" font-family="'DM Mono',monospace" font-size="8.5" fill="#800000">ms</text>
+    <text x="110" y="96" text-anchor="middle" font-family="'DM Mono',monospace" font-size="7.5" fill="#a05050">Ca²⁺ spikes</text>
+    <!-- min -->
+    <line x1="220" y1="53" x2="220" y2="68" stroke="#800000" stroke-width="1.5"/>
+    <text x="220" y="85" text-anchor="middle" font-family="'DM Mono',monospace" font-size="8.5" fill="#800000">min</text>
+    <text x="220" y="96" text-anchor="middle" font-family="'DM Mono',monospace" font-size="7.5" fill="#a05050">kinase cascades</text>
+    <!-- h -->
+    <line x1="350" y1="53" x2="350" y2="68" stroke="#800000" stroke-width="1.5"/>
+    <text x="350" y="85" text-anchor="middle" font-family="'DM Mono',monospace" font-size="8.5" fill="#800000">h</text>
+    <text x="350" y="96" text-anchor="middle" font-family="'DM Mono',monospace" font-size="7.5" fill="#a05050">transcription</text>
+    <!-- day -->
+    <line x1="460" y1="53" x2="460" y2="68" stroke="#800000" stroke-width="1.5"/>
+    <text x="460" y="85" text-anchor="middle" font-family="'DM Mono',monospace" font-size="8.5" fill="#800000">day</text>
+    <text x="460" y="96" text-anchor="middle" font-family="'DM Mono',monospace" font-size="7.5" fill="#a05050">epigenetics</text>
+    <!-- week -->
+    <line x1="590" y1="53" x2="590" y2="68" stroke="#800000" stroke-width="1.5"/>
+    <text x="590" y="85" text-anchor="middle" font-family="'DM Mono',monospace" font-size="8.5" fill="#800000">wk</text>
+    <text x="590" y="96" text-anchor="middle" font-family="'DM Mono',monospace" font-size="7.5" fill="#a05050">fate decisions</text>
+
+    <!-- scRNA-seq "window" bracket -->
+    <rect x="300" y="28" width="160" height="20" rx="3" fill="rgba(128,0,0,0.08)" stroke="#800000" stroke-width="1" stroke-dasharray="3,2"/>
+    <text x="380" y="41" text-anchor="middle" font-family="'DM Mono',monospace" font-size="8" fill="#800000">scRNA-seq sees here</text>
+    <line x1="380" y1="48" x2="380" y2="53" stroke="#800000" stroke-width="1"/>
+
+    <text x="310" y="18" text-anchor="middle" font-family="'DM Mono',monospace" font-size="7.5" fill="#a05050">seven decades of biology; every tool is a bandpass filter</text>
+  </svg>
+  <figcaption>No single measurement technology spans the relevant timescales. Sequencing captures the middle; it misses both ends.</figcaption>
+</figure>
+
+<p>
+The field has developed increasingly sophisticated computational workarounds for the first two problems. These workarounds are worth understanding carefully, because the story of each one follows the same arc: a clever idea that works in some conditions, followed by a gradual recognition that the conditions are more restrictive than the early papers implied.
+</p>
+<hr>
+
+<h2>Pseudotime: the ordering that isn't time</h2>
+<p>
+Pseudotime inference orders cells along a trajectory of transcriptional change. Monocle fits a principal graph through cells in reduced-dimensional space and measures pseudotime as geodesic distance from a user-selected root node. Diffusion pseudotime constructs a transition probability matrix from gene expression similarities and measures pseudotime as the difference in diffusion distributions relative to a root cell. PAGA takes a more honest approach: it constructs a coarse-grained topology of cluster-to-cluster connections and lets you see the graph without forcing a continuous ordering.
+</p>
+<p>
+These methods work well in specific circumstances. Hematopoiesis, intestinal crypt differentiation, spermatogenesis: systems with strong transcriptional gradients, well-separated states, dense intermediate sampling, and enough prior biological knowledge to anchor the root. In those systems, pseudotime is informative.
+</p>
+<p>
+The failure modes are well-characterized and routinely ignored. Pseudotime assumes tree-like topology, which breaks down for any process with cycles (the cell cycle being the most obvious), convergent trajectories, or simultaneous parallel processes. <strong>Pseudotime has no units.</strong> A large difference in pseudotime value could correspond to minutes or months; there is no way to know. Root selection is arbitrary without prior knowledge, and reversing the root produces an equally valid but reversed ordering. Cell cycle creates orthogonal variation that trajectories thread through if you don't explicitly regress it out, generating spurious developmental branches. And the distance calculations underlying all these methods are distorted by dropout, which is extensive: 10x Chromium counts matrices are 65 to 90% zeros, a mixture of genes that were genuinely off and genes that were expressed but not captured. These are statistically indistinguishable at the single-cell level.
+</p>
+<p>
+The most important thing to understand about pseudotime is that the output is not data. It is a model prediction. The gradient on the UMAP is something that was computed, using a series of assumptions, from a snapshot. Papers that plot pseudotime on the x-axis and call it "time" are making a category error, and the field has let this become normal.
+</p>
+
+<figure class="umap-figure">
+  <canvas id="umapCanvas" width="520" height="280" style="max-width:100%;border-radius:4px;"></canvas>
+  <figcaption>Same cells, two interpretations. The gradient and arrow are added by the researcher — the data is identical in both panels. Toggle to see the problem.</figcaption>
+</figure>
+<div style="text-align:center;margin:-1.2rem 0 2rem;">
+  <button id="umapToggle" style="font-family:'DM Mono',monospace;font-size:0.8rem;color:var(--ink);background:var(--code-bg);border:1px solid var(--rule);padding:0.4rem 1.1rem;border-radius:3px;cursor:pointer;letter-spacing:0.03em;">
+    toggle interpretation
+  </button>
+</div>
+
+<script>
+(function(){
+  const canvas = document.getElementById('umapCanvas');
+  const ctx = canvas.getContext('2d');
+  const btn = document.getElementById('umapToggle');
+  const W = canvas.width, H = canvas.height;
+  const HW = W/2;
+
+  // Generate two blobs of points in each panel
+  const rng = (seed) => { let s=seed; return ()=>{ s=Math.sin(s)*10000; return s-Math.floor(s); }; };
+  const r = rng(42);
+
+  // Points for left panel (blob A: stem, blob B: intermediate, blob C: differentiated)
+  const pts = [];
+  // Cluster 1 - "stem-like"
+  for(let i=0;i<60;i++) pts.push({x: 0.18+r()*0.12, y: 0.4+r()*0.18, cluster:'A'});
+  // Cluster 2 - "intermediate"
+  for(let i=0;i<55;i++) pts.push({x: 0.38+r()*0.10, y: 0.35+r()*0.16, cluster:'B'});
+  // Cluster 3 - "fate 1"
+  for(let i=0;i<50;i++) pts.push({x: 0.58+r()*0.12, y: 0.22+r()*0.14, cluster:'C'});
+  // Cluster 4 - "fate 2" 
+  for(let i=0;i<50;i++) pts.push({x: 0.60+r()*0.12, y: 0.60+r()*0.14, cluster:'D'});
+
+  let mode = 0; // 0 = plain, 1 = with pseudotime
+
+  function colorForPoint(p, m) {
+    if(m === 0) {
+      // neutral gray dots
+      return 'rgba(128,0,0,0.35)';
+    } else {
+      // pseudotime gradient: blue -> yellow by x position (fake ordering)
+      const t = (p.x - 0.14) / 0.60;
+      const r_ = Math.round(10 + t * 220);
+      const g_ = Math.round(80 + t * 160);
+      const b_ = Math.round(200 - t * 180);
+      return `rgb(${r_},${g_},${b_})`;
+    }
+  }
+
+  function draw() {
+    ctx.clearRect(0, 0, W, H);
+    ctx.fillStyle = '#fff9f0';
+    ctx.fillRect(0,0,W,H);
+
+    // Draw points in both panels (same positions)
+    for(let panel=0;panel<2;panel++){
+      const ox = panel === 0 ? 30 : HW + 10;
+      const pw = HW - 40;
+      const ph = H - 60;
+
+      ctx.fillStyle = panel === 1 && mode === 0 ? 'rgba(128,0,0,0.09)' : 'transparent';
+      if(panel===1 && mode===1) {
+        ctx.fillStyle = 'rgba(200,230,255,0.12)';
+      }
+      ctx.fillRect(ox+10,25,pw-10,ph);
+
+      for(const p of pts) {
+        const cx = ox + 20 + p.x * (pw - 30);
+        const cy = 30 + p.y * (ph - 10);
+        ctx.beginPath();
+        ctx.arc(cx, cy, 3.5, 0, Math.PI*2);
+        ctx.fillStyle = panel===0 ? 'rgba(128,0,0,0.3)' : colorForPoint(p, mode);
+        ctx.fill();
+      }
+
+      // Label
+      ctx.font = '10px "DM Mono", monospace';
+      ctx.fillStyle = 'rgba(128,0,0,0.5)';
+      ctx.textAlign = 'center';
+      ctx.fillText(panel===0 ? 'raw scRNA-seq (UMAP)' : (mode===0 ? 'same data, no interpretation' : 'same data + pseudotime arrow'), ox + pw/2, H - 12);
+
+      if(panel===1 && mode===1) {
+        // Draw pseudotime arrow
+        ctx.beginPath();
+        ctx.moveTo(ox+45, 55+ph*0.42);
+        ctx.quadraticCurveTo(ox+pw*0.4, 55+ph*0.28, ox+pw-25, 55+ph*0.12);
+        ctx.strokeStyle = 'rgba(180,80,0,0.65)';
+        ctx.lineWidth = 2;
+        ctx.setLineDash([4,3]);
+        ctx.stroke();
+        ctx.setLineDash([]);
+        // arrowhead
+        const ex = ox+pw-25, ey = 55+ph*0.12;
+        ctx.beginPath(); ctx.moveTo(ex,ey); ctx.lineTo(ex-10,ey+6); ctx.lineTo(ex-7,ey-4); ctx.closePath();
+        ctx.fillStyle = 'rgba(180,80,0,0.65)'; ctx.fill();
+
+        // A second arrow to fate 2
+        ctx.beginPath();
+        ctx.moveTo(ox+pw*0.46, 55+ph*0.41);
+        ctx.quadraticCurveTo(ox+pw*0.52, 55+ph*0.54, ox+pw-28, 55+ph*0.62);
+        ctx.strokeStyle = 'rgba(180,80,0,0.45)';
+        ctx.lineWidth = 1.5;
+        ctx.setLineDash([3,3]);
+        ctx.stroke();
+        ctx.setLineDash([]);
+
+        // Legend bar
+        const lx = ox+16, ly = H-38, lw=100, lh=7;
+        const grad = ctx.createLinearGradient(lx,0,lx+lw,0);
+        grad.addColorStop(0,'rgb(10,80,200)');
+        grad.addColorStop(1,'rgb(230,240,10)');
+        ctx.fillStyle = grad;
+        ctx.fillRect(lx,ly,lw,lh);
+        ctx.fillStyle = 'rgba(128,0,0,0.6)'; ctx.textAlign='left';
+        ctx.fillText('pseudotime →', lx, ly-3);
+      }
+    }
+
+    // Divider
+    ctx.beginPath(); ctx.moveTo(HW,15); ctx.lineTo(HW,H-10);
+    ctx.strokeStyle = 'rgba(128,0,0,0.15)'; ctx.lineWidth=1; ctx.stroke();
+  }
+
+  draw();
+  btn.addEventListener('click', () => { mode = mode === 0 ? 1 : 0; draw(); });
+})();
+</script>
+
+<hr>
+
+<h2>RNA velocity: arrows that may be pointing the wrong way</h2>
+<p>
+RNA velocity, introduced by La Manno et al. (Nature, 2018) and refined by Bergen et al. in scVelo (Nature Biotechnology, 2020), was a genuine conceptual advance on the directionality problem. Standard RNA-seq captures not just spliced (mature) mRNA but some unspliced (intronic) RNA, representing transcripts still being processed. If a cell has more unspliced reads for a gene than expected at steady state, that gene is being upregulated; fewer means downregulation. Aggregate across genes and you get a velocity vector per cell — an arrow in the direction the cell is "moving" transcriptionally. Project those arrows onto a UMAP and you have streamlines.
+</p>
+<p>
+scVelo improved on the original steady-state model substantially by fitting gene-specific kinetics via expectation-maximization, recovering transcription, splicing, and degradation rates per gene without assuming cells have reached steady state. The improvement on simple datasets was real.
+</p>
+<p>
+The failure modes are not edge cases. Bergen et al.'s own 2021 critical review in Molecular Systems Biology documented them. Transcriptional boosts — coordinated step-changes in transcription rate, as in erythroid maturation — produce negative velocity estimates when expression is actually increasing. Multiple kinetic regimes across subpopulations produce conflicting slopes in phase space that single-parameter models cannot resolve. In droplet-based sequencing, fewer than 5% of reads map to introns, so the signal underlying velocity is sparse and biased. And projecting high-dimensional velocity vectors onto 2D UMAP space introduces additional smoothing that can produce streamlines pointing in directions with no relationship to actual biology.
+</p>
+<p>
+Gorin, Svensson, and Pachter (PLoS Computational Biology, 2022) called the method "not yet reliable enough to be actionable" and documented fundamental incompatibilities between the biophysics and the signal processing framework, plus dependence on arbitrary hyperparameters.
+</p>
+<p>
+Subsequent methods have addressed different pieces. veloVI (Gayoso et al., Nature Methods, 2024) wraps velocity inference in a variational autoencoder, providing uncertainty quantification — at least you know when the model doesn't believe itself. UniTVelo abandons the ODE framework and models spliced RNA dynamics with radial basis functions, handling sparse unspliced signal better. A comprehensive 2025 benchmarking study evaluated 14 velocity methods across 17 datasets. No single method dominated; all failed on at least one dataset. The honest summary: RNA velocity is a reasonable heuristic for simple, well-separated bifurcations with strong transcriptional gradients. For complex tissues, slow processes, or circular topology, the arrows are model predictions with substantial unquantified uncertainty.
+</p>
+<hr>
+
+<h2>Optimal transport: finally using real time</h2>
+<p>
+Optimal transport methods represent a genuine conceptual step up from pseudotime because they require real experimental time points rather than inferring temporal ordering from a single snapshot.
+</p>
+<p>
+Waddington-OT (Schiebinger et al., Cell, 2019) models cell populations at each time point as probability distributions in gene expression space and computes entropically regularized optimal transport couplings between consecutive distributions. The transport map minimizes total displacement cost while accounting for cell growth and death via unbalanced transport. Applied to iPSC reprogramming across 315,000 cells and 39 time points at 12-hour intervals, it revealed branching fate structures that pseudotime had missed. LineageOT (Forrow &amp; Schiebinger, 2021) integrates CRISPR lineage barcodes into the cost function, improving ancestor prediction for convergent trajectories where gene expression alone cannot distinguish cells from different origins. moscot (Klein et al., Nature, 2025) scales this to 1.7 million cells across 20 time points via GPU-accelerated low-rank approximations, with support for multimodal data.
+</p>
+<p>
+CellRank 2 (Weiler et al., Nature Methods, 2024) takes a more pragmatic approach: it composes multiple weak directional signals into a unified transition matrix through a modular kernel framework. Available kernels include RNA velocity, pseudotime, developmental potential scoring (CytoTRACE), and importantly, a real-time kernel that combines within-time-point dynamics with optimal transport couplings between experimental time points. Downstream analysis uses Generalized Perron Cluster Cluster Analysis, borrowed from molecular dynamics, to identify macrostates and compute fate probabilities as absorption probabilities on the Markov chain. In benchmarks on hematopoiesis, the velocity-based kernel predicted erythroblast-to-monocyte transitions that don't biologically occur; the real-time and metabolic-labeling kernels correctly recovered the known hierarchy. The metabolic labeling kernel identified all lineages in gut organoid differentiation where velocity-based analysis failed entirely.
+</p>
+<p>
+OT-based methods are substantially more principled than pseudotime. They use real time. They account for proliferation. They produce probabilistic couplings rather than deterministic paths. But they still don't track individual cells. The output is a population-level mapping, and the experimental design requirements are demanding: the gold-standard iPSC study had 39 time points. Most labs collect 3 to 6, which is inadequate for anything beyond before/after.
+</p>
+<hr>
+
+<h2>Foundation models: a brief detour</h2>
+<p>
+The hype around single-cell foundation models — scGPT, Geneformer, scFoundation — as tools for understanding cellular dynamics is substantially unjustified.
+</p>
+<p>
+The training data contains zero temporal information. These models are pretrained on static expression snapshots using masked gene prediction. There is no notion of before and after in the training objective. When deployed for trajectory analysis, the temporal ordering comes entirely from external methods (pseudotime, RNA velocity) that the foundation model had nothing to do with. The model contributes a learned embedding space, not temporal understanding.
+</p>
+<p>
+They also don't outperform simpler methods on the tasks they claim to solve. Kedzierska et al. (Genome Biology, 2025) showed that on cell type classification — arguably the task most aligned with the training objective — scGPT, Geneformer, and scFoundation are matched or beaten by logistic regression on PCA embeddings. A sparse autoencoder analysis found that only 3 of 48 tested transcription factors showed regulatory-target-specific feature responses. These models learn co-expression patterns, not causation. That is not a failure of architecture. It is a consequence of the data they are trained on.
+</p>
+<hr>
+
+<h2>What actual measurement looks like</h2>
+
+<h3>Live-cell biosensors: watching the cell decide</h3>
+<p>
+Kinase translocation reporters (KTRs), introduced by Regot et al. (Cell, 2014) and systematically extended since, are the current best approach for high-throughput signaling dynamics. The design is conceptually elegant: a substrate peptide that is phosphorylated by a target kinase, fused to a nuclear export signal (NES) that is stronger than the nuclear import signal (NLS) when unphosphorylated. When the kinase is inactive, the fusion protein accumulates in the nucleus. When the kinase is active, phosphorylation tips the balance toward the NES, and the reporter redistributes to the cytoplasm. You measure the cytoplasm-to-nucleus ratio by segmenting single cells in time-lapse microscopy.
+</p>
+<p>
+KTRs can be multicolored — each kinase reporter uses a different fluorescent protein rather than two, so you can multiplex three, four, or five simultaneously. ERK, JNK, p38, PKA, and Akt KTRs all exist. Regot et al. demonstrated simultaneous three-kinase readout in single cells; subsequent work has combined ERK-KTR and PKA-KTR with GCaMP8s for three-pathway readout in the same cell. The dynamic range is typically 3 to 10-fold change in cytoplasm-to-nucleus ratio, larger than most FRET sensors, and the imaging requirements are standard widefield microscopy with conventional segmentation. A lab with Cellpose and a widefield scope can do four-channel signaling dynamics in a thousand cells simultaneously.
+</p>
+<p>
+For mRNA dynamics, the MS2/PP7 coat protein system gives you ground truth at the cost of throughput. Insert 24 MS2 stem loops into a gene, co-express MCP-GFP, and each mRNA becomes a visible diffraction-limited spot. Active transcription sites appear as bright nuclear puncta; you can directly observe transcriptional bursting with sub-second temporal resolution. Placing MS2 at the 5' end and PP7 at the 3' end of the same gene lets you measure RNA polymerase elongation rate from the time delay between signals (around 1.5 kb/min in Drosophila embryos). This is measuring what it claims to measure, which puts it in a small and distinguished category.
+</p>
+
+<h3>Lineage recording: writing history into DNA</h3>
+<p>
+Molecular recording systems use CRISPR-induced mutations as heritable barcodes that accumulate during cell division, encoding lineage history in the genome itself. The early systems — GESTALT (McKenna et al., Science, 2016), CARLIN (Bowling et al., Cell, 2020) — established that you could reconstruct cell division histories from indel patterns in scRNA-seq readout. The fundamental limitation: target sites get fully edited early, creating a ceiling on recording duration, and identical indels arising independently in unrelated cells produce false shared-ancestry signals.
+</p>
+<p>
+The current generation has addressed this. DNA Typewriter (Choi et al., Nature, 2022) uses prime editing rather than double-strand breaks, creating sequential unidirectional insertions to an engineered recording tape where temporal order is encoded by physical position. It reconstructed monophyletic lineages of 3,257 cells over 20+ generations and 25 days. BASELINE (Winter et al., bioRxiv, 2025) uses Cas12a adenine base editing across 50 synthetic target sites, encoding over 4,300 bits of information per cell — a 50-fold increase over earlier technologies — and reaches an estimated 40 cell divisions deep without saturation. Because there are no double-strand breaks, there are also no inter-site deletions.
+</p>
+<p>
+The most significant recent development is spatial readout. PEtracer (Koblan et al., Science, 2025) couples prime editing-based lineage marks with MERFISH spatial transcriptomics, reconstructing 3D tumor growth in vivo across hundreds of thousands of cells. The combination of lineage history, transcriptional state, and spatial position within the same measurement is now technically achievable for the first time, and the implications for understanding how tissue self-organization actually works are considerable.
+</p>
+
+<h3>Label-free approaches: measuring without touching</h3>
+<p>
+Every fluorescent label perturbs the cell. Fluorescent proteins fold slowly, oligomerize, and alter fusion partner behavior. Organic dyes generate reactive oxygen species. Genetic modification changes gene regulation. For long-term dynamics where phototoxicity and photobleaching accumulate, label-free imaging is not merely attractive — it is sometimes necessary.
+</p>
+<p>
+Stimulated Raman scattering (SRS) microscopy probes molecular bonds via inelastic photon scattering, providing chemical specificity without any labels. Two synchronized pulsed laser beams with a frequency difference matching a Raman-active vibration coherently stimulate the transition, amplifying the signal by up to 10<sup>8</sup> over spontaneous Raman, enabling video-rate imaging. The killer application for dynamics is the cell-silent spectral window. Deuterium-labeled metabolites — deuterated glucose, amino acids, fatty acids — produce C-D bond stretches around 2100 to 2200 cm<sup>-1</sup>, a region where no endogenous Raman peaks exist. Pulse-chase with deuterium-labeled precursors enables metabolic flux imaging in live cells over time, without genetic modification and without fluorescent labels. The MARS dye platform extends this to 24-channel simultaneous imaging using engineered probes with spectral linewidths roughly 100-fold sharper than fluorescence spectra.
+</p>
+<p>
+SRS is not a plug-and-play technique. Pulsed laser systems and optical parametric oscillators cost $200K to $500K and require specialist expertise. It remains confined to a handful of labs. But for measuring what cells are actually doing metabolically without touching the genome, it is one of the most underappreciated approaches in the field.
+</p>
+<hr>
+
+<h2>Where the gap actually sits</h2>
+<p>
+The computational approaches described earlier — pseudotime, velocity, optimal transport — are not wrong to exist. They extract real signal from available data, and for cell type classification, tissue atlasing, and hypothesis generation, they have been transformative. The problem is specifically when they are used to make kinetic or mechanistic claims that the data cannot support: claims about transition rates, causal ordering, or the direction of fate decisions in individual cells.
+</p>
+<p>
+The technologies that provide ground truth — metabolic labeling, live-cell reporters, lineage tracing — should be used to validate computational predictions far more routinely than they currently are. The CellRank 2 benchmarks are instructive here: velocity-based fate predictions that violated known biology in hematopoiesis were corrected when real-time or metabolic-labeling kernels were used instead. This is not a minor recalibration. It is a reversal.
+</p>
+<p>
+The most reliable experiments combine at least two orthogonal approaches: velocity validated by metabolic labeling, pseudotime anchored by real time points, spatial inference constrained by lineage information. Single-modality conclusions should attract more skepticism than they currently do, proportional to how much was inferred versus directly observed. What the field is moving toward — the integration of lineage recording with spatial transcriptomics, metabolic labeling with single-cell sequencing, live biosensors with computational frameworks that account for real experimental time — is genuinely exciting. The distance between inference and measurement is, for the first time, actually closing.
+</p>
+</article>
+
+<nav class="post-nav">
+  <a href="organs.html" class="nav-link prev">&#8592; We Cannot Build Organs Yet</a>
+  <a href="../index.html" class="nav-home">All writing</a>
+  <a href="recorders.html" class="nav-link next">The Recorder Zoo &#8594;</a>
+</nav>
+
+<script>
+  const bar = document.getElementById('progress-bar');
+  window.addEventListener('scroll', () => {
+    const doc = document.documentElement;
+    const scrolled = doc.scrollTop;
+    const total = doc.scrollHeight - window.innerHeight;
+    bar.style.width = (total > 0 ? (scrolled / total) * 100 : 0) + '%';
+  }, { passive: true });
+</script>
+
+</body>
+</html>

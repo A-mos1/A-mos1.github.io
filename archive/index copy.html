@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ahmed Moselhi - Personal Website</title>
+    <style>
+        body {
+            margin: 0;
+            min-height: 300vh;
+            font-family: Arial, sans-serif;
+            background-color: #FFF5E6; /* Cream background */
+            color: #800000; /* Maroon text */
+        }
+        svg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+        .neuron-path {
+            fill: none;
+            stroke: rgba(128, 0, 0, 0.3); /* Match nucleus color */
+        }
+        .soma {
+            fill: rgba(128, 0, 0, 0.2);
+        }
+        .nucleus {
+            fill: rgba(128, 0, 0, 0.3);
+        }
+        .synapse {
+            fill: rgba(128, 0, 0, 0.4);
+        }
+        .content {
+            position: relative;
+            z-index: 1;
+            padding: 20px;
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: rgba(255, 245, 230, 0.8);
+        }
+        .profile-photo {
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin: 0 auto 20px;
+            display: block;
+        }
+        .gallery {
+            padding: 20px;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        .gallery h3 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 10px;
+        }
+        .gallery-grid img {
+            width: 100%;
+            height: auto;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+<body>
+    <svg id="neuron-container"></svg>
+    
+    <div class="content">
+        <img src="pic.png" alt="Ahmed Moselhi" class="profile-photo">
+        
+        <h1>Hi, I'm Ahmed</h1>
+        
+        <h2>Where I'm at</h2>
+        <p>MSc Student @ Biosystems Science and Engineering, ETH Zurich, Basel</p>
+        <p>Email: <a href="mailto:amoselhi@ethz.ch">amoselhi@ethz.ch</a></p>
+        <p>Twitter: <a href="https://twitter.com/AhmedMoselhi2">@AhmedMoselhi2</a></p>
+        
+        <h3>Now</h3>
+        <ul>
+            <li>Intern @ IHB, Basel</li>
+            <li>Learning math, code & engineering (applied to biology) @ DBSSE, Basel</li>
+        </ul>
+        
+        <h3>Previously</h3>
+        <ul>
+            <li>Programming neurons and innervating organs-on-chip @ IHB (Roche), Basel</li>
+            <li>In-vivo and In-vitro CRISPR screens in *****-carcinoma @ DBSSE, Basel</li>
+            <li>In-vitro and in-silico CRISPR screens on neural precursors @ Sickkids, Toronto</li>
+            <li>Life science startup insights @ MaRS, Toronto</li>
+            <li>Macular degeneration R&D intern @ Endogena Therapeutics, Toronto</li>
+            <li>Zebrafish somitogenesis and development @ EPFL, Lausanne</li>
+            <li>Immune interface with Gut-brain axis @ Krembil brain institute, Toronto</li>
+            <li>Neuroscience & Immunology @ University of Toronto</li>
+        </ul>
+        
+
+    </div>
+
+    <script>
+        const svg = document.getElementById('neuron-container');
+        const neurons = [];
+
+        function createNeuron() {
+            const group = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+            const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+            const soma = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+            const nucleus = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+
+            path.classList.add('neuron-path');
+            soma.classList.add('soma');
+            nucleus.classList.add('nucleus');
+
+            group.appendChild(path);
+            group.appendChild(soma);
+            group.appendChild(nucleus);
+
+            const synapses = [];
+            for (let i = 0; i < 3; i++) {
+                const synapse = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+                synapse.classList.add('synapse');
+                group.appendChild(synapse);
+                synapses.push(synapse);
+            }
+
+            svg.appendChild(group);
+
+            return {
+                group: group,
+                path: path,
+                soma: soma,
+                nucleus: nucleus,
+                synapses: synapses,
+                x: Math.random() * window.innerWidth,
+                y: Math.random() * window.innerHeight,
+                amplitude: Math.random() * 100 + 50,
+                frequency: Math.random() * 0.01 + 0.005,
+                axonWidth: Math.random() * 5 + 10, 
+                direction: Math.random() * Math.PI * 2
+            };
+        }
+
+        function updateNeurons() {
+            const scrollY = window.scrollY;
+            const totalHeight = document.documentElement.scrollHeight;
+            const viewportHeight = window.innerHeight;
+            const scrollPercentage = scrollY / (totalHeight - viewportHeight);
+            const maxHeight = totalHeight * 1.5;
+            
+            neurons.forEach(neuron => {
+                const somaSize = 27 + Math.sin(scrollY * 0.000001) * 0.05;
+                const somaPath = generateIrregularShape(neuron.x, neuron.y, somaSize, 8);
+                neuron.soma.setAttribute('d', somaPath);
+
+                const nucleusSize = somaSize * 0.4;
+                neuron.nucleus.setAttribute('cx', neuron.x);
+                neuron.nucleus.setAttribute('cy', neuron.y);
+                neuron.nucleus.setAttribute('r', nucleusSize);
+
+                let d = `M${neuron.x} ${neuron.y}`; 
+                const length = maxHeight * 0.6;
+                for (let i = 0; i <= length; i += 20) {
+                    const angle = neuron.direction + Math.sin(i * neuron.frequency) * 0.5;
+                    const x = neuron.x + Math.cos(angle) * i;
+                    const y = neuron.y + Math.sin(angle) * i;
+                    d += ` L${x} ${y}`;
+                }
+                neuron.path.setAttribute('d', d);
+                neuron.path.style.strokeWidth = neuron.axonWidth;
+
+                const clipHeight = scrollPercentage * maxHeight;
+                neuron.path.style.clipPath = `polygon(0 0, 100% 0, 100% ${clipHeight}px, 0 ${clipHeight}px)`;
+
+                neuron.synapses.forEach((synapse, index) => {
+                    const angle = (index / neuron.synapses.length) * Math.PI * 2 + neuron.direction;
+                    const distance = somaSize * 1.2;
+                    const sx = neuron.x + Math.cos(angle) * distance;
+                    const sy = neuron.y + Math.sin(angle) * distance;
+                    synapse.setAttribute('cx', sx);
+                    synapse.setAttribute('cy', sy);
+                    synapse.setAttribute('r', 3);
+                });
+            });
+        }
+
+        function generateIrregularShape(cx, cy, size, points) {
+            let path = `M ${cx + size} ${cy} `;
+            for (let i = 1; i <= points; i++) {
+                const angle = (i / points) * Math.PI * 2;
+                const r = size * (0.8 + Math.random() * 0.4);
+                const x = cx + Math.cos(angle) * r;
+                const y = cy + Math.sin(angle) * r;
+                path += `L ${x} ${y} `;
+            }
+            return path + 'Z';
+        }
+
+        for (let i = 0; i < 24; i++) {
+            neurons.push(createNeuron());
+        }
+
+        window.addEventListener('scroll', updateNeurons);
+        window.addEventListener('resize', updateNeurons);
+        updateNeurons();
+    </script>
+</body>
+</html>

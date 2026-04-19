@@ -4,6 +4,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Ahmed Moselhi - Personal Website</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;1,400&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
   <style>
     * {
       box-sizing: border-box;
@@ -12,17 +14,19 @@
     body {
       margin: 0;
       min-height: 250vh; /* gives enough scroll range for the morphogenesis */
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      background: #FFF5E6; /* deep navy */
+      font-family: 'Lora', Georgia, serif;
+      background: #FFF5E6;
       color: #800000;
     }
 
     a {
-      color: #38bdf8;
-      text-decoration: none;
+      color: #800000;
+      text-decoration: underline;
+      text-decoration-color: rgba(128,0,0,0.25);
+      text-underline-offset: 3px;
     }
     a:hover {
-      text-decoration: underline;
+      text-decoration-color: #800000;
     }
 
     /* full-screen procedural tissue background */
@@ -110,13 +114,14 @@
       text-align: center;
       margin-bottom: 0.75rem;
       font-size: 0.95rem;
-      color: #cbd5f5;
+      color: #a05050;
     }
 
     .contact {
       text-align: center;
       margin-bottom: 1.5rem;
-      font-size: 0.95rem;
+      font-size: 0.88rem;
+      font-family: 'DM Mono', monospace;
     }
 
     .contact p {
@@ -137,7 +142,7 @@
       <p>MSc Student @ Biosystems Science and Engineering, ETH Zurich, Basel</p>
       <p>
         Email:
-        <a href="mailto:amoselhi@ethz.ch">amoselhi@ethz.ch</a>
+        <a href="amoselhi@ethz.ch"><span class="__cf_email__" data-cfemail="afcec2c0dccac3c7c6efcadbc7d581ccc7">amoselhi@ethz.ch</span></a>
       </p>
       <p>
         Twitter:
@@ -164,14 +169,14 @@
       <li>Immune interface with gut-brain axis @ Krembil Brain Institute, Toronto</li>
       <li>Neuroscience &amp; Immunology @ University of Toronto</li>
     </ul>
-
-    <h4>...</h4>
+    <h2>Writing</h2>
+    <p>Thoughts on biological dynamics, measurement, and organ engineering. <a href="blog/index.html">See all posts &#8594;</a></p>
     <ul>
     </ul>
   </div>
   
 
-  <script>
+  <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
     (function() {
       function isMobile() {
         return window.innerWidth <= 900;
@@ -724,16 +729,22 @@
       window.addEventListener("scroll", update);
       window.addEventListener("resize", () => {
         resizeCanvas();
+        generateCellCenters();
+        computeVoronoiPolygons();
+        assignBirthAndRadius();
         update();
       });
 
-      // init
+      // --- Init ---
       resizeCanvas();
       generateCellCenters();
       computeVoronoiPolygons();
       assignBirthAndRadius();
+      render(0);
       update();
+
     })();
   </script>
+
 </body>
 </html>

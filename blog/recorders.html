@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>The Recorder Zoo — Ahmed Moselhi</title>
+  <meta name="description" content="A tour through every molecular recording system biology has built — from CRISPR indel recorders to protein structures that grow like tree rings inside neurons." />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;1,400&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; }
+    :root {
+      --bg: #FFF5E6; --ink: #800000; --ink-faint: #a05050;
+      --rule: rgba(128,0,0,0.15); --code-bg: rgba(128,0,0,0.06); --max-w: 680px;
+    }
+    html { scroll-behavior: smooth; }
+    body { margin:0; background:var(--bg); color:var(--ink); font-family:'Lora',Georgia,serif; font-size:1.05rem; line-height:1.75; }
+    .topbar { position:sticky;top:0;z-index:10;background:var(--bg);border-bottom:1px solid var(--rule);padding:0.6rem 1.5rem;display:flex;justify-content:space-between;align-items:center;font-size:0.82rem;font-family:'DM Mono',monospace; }
+    .topbar a { color:var(--ink-faint);text-decoration:none; }
+    .topbar a:hover { color:var(--ink);text-decoration:underline; }
+    .topbar .site-name { font-weight:500;color:var(--ink); }
+    article { max-width:var(--max-w);margin:0 auto;padding:3.5rem 1.5rem 6rem; }
+    h1 { font-size:clamp(1.8rem,5vw,2.6rem);font-weight:600;line-height:1.2;margin:0 0 0.5rem;letter-spacing:-0.02em; }
+    .post-meta { font-family:'DM Mono',monospace;font-size:0.78rem;color:var(--ink-faint);margin-bottom:2.8rem;letter-spacing:0.03em; }
+    h2 { font-size:1.35rem;font-weight:600;margin:2.8rem 0 0.6rem;letter-spacing:-0.01em; }
+    h3 { font-size:1.1rem;font-weight:600;margin:2rem 0 0.4rem;font-style:italic; }
+    p { margin:0 0 1.4rem; }
+    hr { border:none;border-top:1px solid var(--rule);margin:2.5rem 0; }
+    strong { font-weight:600; } em { font-style:italic; }
+    a { color:var(--ink);text-decoration:underline;text-decoration-color:var(--rule);text-underline-offset:3px; }
+    a:hover { text-decoration-color:var(--ink); }
+    sup { font-size:0.75em; }
+    #progress-bar { position:fixed;top:0;left:0;height:2px;background:var(--ink);width:0%;z-index:100;transition:width 0.1s linear; }
+    .post-nav { max-width:var(--max-w);margin:0 auto;padding:2rem 1.5rem 4rem;display:grid;grid-template-columns:1fr auto 1fr;gap:1rem;align-items:center;border-top:1px solid var(--rule);font-family:'DM Mono',monospace;font-size:0.8rem; }
+    .post-nav .nav-link { color:var(--ink-faint);text-decoration:none; }
+    .post-nav .nav-link:hover { color:var(--ink); }
+    .post-nav .nav-link.next { text-align:right; }
+    .post-nav .nav-home { text-align:center;color:var(--ink-faint);text-decoration:none; }
+    .post-nav .nav-home:hover { color:var(--ink); }
+    .tree-wrap { margin:2.5rem 0;width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch; }
+    .tree-wrap canvas { display:block;max-width:100%; }
+    .tree-wrap figcaption { font-family:'DM Mono',monospace;font-size:0.75rem;color:var(--ink-faint);margin-top:0.7rem;letter-spacing:0.02em; }
+    .gap-figure { margin:2rem 0; }
+    .gap-bar-row { display:flex;align-items:center;margin:0.55rem 0;gap:0.8rem; }
+    .gap-label { font-family:'DM Mono',monospace;font-size:0.78rem;color:var(--ink-faint);width:170px;flex-shrink:0;line-height:1.3; }
+    .gap-bar-track { flex:1;height:14px;background:var(--code-bg);border-radius:3px;overflow:hidden; }
+    .gap-bar-fill { height:100%;border-radius:3px; }
+    .gap-value { font-family:'DM Mono',monospace;font-size:0.78rem;color:var(--ink);width:90px;text-align:right;flex-shrink:0; }
+    .gap-note { font-family:'DM Mono',monospace;font-size:0.72rem;color:var(--ink-faint);margin-top:0.4rem; }
+    @media(max-width:600px) {
+      .post-nav{grid-template-columns:1fr;text-align:center;}
+      .gap-label{width:110px;font-size:0.7rem;} .gap-value{width:70px;font-size:0.7rem;}
+    }
+  </style>
+</head>
+<body>
+<div id="progress-bar"></div>
+<nav class="topbar">
+  <span class="site-name"><a href="../index.html">Ahmed Moselhi</a></span>
+  <a href="../index.html">&#8592; Writing</a>
+</nav>
+<article>
+
+<!-- Header image -->
+<img style="width:100%;height:300px;object-fit:cover;display:block;margin-bottom:2.4rem;filter:sepia(0.12) brightness(0.95);" src="https://images.unsplash.com/photo-1614935151651-0bea6508db6b?w=1200&q=80&auto=format&fit=crop" alt="CRISPR molecular biology — Cas9 editing DNA" loading="lazy">
+
+<h1>The Recorder Zoo</h1>
+<p class="post-meta">August 2025 &middot; molecular recording, single-cell tools</p>
+
+<p>Every cell you have ever had carried a story it could not tell you. It divided, migrated, received a signal, committed to a fate — and all of that information evaporated by the time you lysed it for sequencing. The previous post was about how the field handles this computationally: pseudotime, RNA velocity, optimal transport, increasingly elaborate math applied to snapshots. This post is about the other response: stop inferring. Write the history down. Build a molecular recorder that converts transient biological events into permanent, readable marks inside the cell itself.</p>
+<p>The field has been trying to do this for about a decade. What it has produced is a genuinely bizarre menagerie — thirteen distinct recorder classes spanning DNA, RNA, protein, and chromatin as substrates, ranging from elegant bacterial systems that will probably never work in a mouse to protein structures that grow like tree rings inside living neurons. Some of these will be remembered as the CRISPR of the 2030s. Some are beautiful ideas trapped permanently in a test tube. Most are somewhere in between.</p>
+<p>Once you look at all of them together, a natural taxonomy emerges. There are three fundamental classes: systems that <strong>write into DNA</strong>, systems that <strong>assemble protein structures</strong> inside the cell, and systems that <strong>sequester RNA</strong> to preserve a transcriptional snapshot. Within each class there are distinct sub-strategies, and understanding why each exists is the point of this tour.</p>
+
+<div class="tree-wrap">
+  <div id="treeOuter" style="width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch;padding-bottom:4px;">
+    <div id="treeContainer"></div>
+  </div>
+  <p style="font-family:'DM Mono',monospace;font-size:0.75rem;color:var(--ink-faint);margin-top:0.6rem;letter-spacing:0.02em;">Hover any node for details. Root splits to three classes at staggered depths. Each class's sub-branches hang directly below it. All DNA sub-branches edit the genome — only the writing precision differs.</p>
+</div>
+
+<script>
+(function(){
+  const C={dna:'#7b1a1a',prot:'#2d5a1a',rna:'#1a3a6a',root:'#800000'};
+
+  const DNA_DATA = { id:'dna', lines:['DNA Writers'], sub:'edit the genome', c:C.dna,
+    tip:'All five sub-branches write permanent nucleotide changes to DNA — readable by sequencing. The distinction is how precisely the writing instrument works: from random deletion scars to deterministic symbol insertion.',
+    ch:[
+      { id:'indel', lines:['Indel Writers'], sub:'random DSB repair', c:C.dna,
+        tip:'Cas9 creates double-strand breaks; NHEJ produces random deletions. ~10-20 bits/cell. Each cut destroys a recording channel — the tape eats itself.',
+        ch:[{ id:'gestalt', lines:['GESTALT / CARLIN'], sub:'Science 2016 · Cell 2020', c:C.dna,
+          tip:'GESTALT (Science 2016): 10 Cas9 sites in zebrafish — 98% of adult blood from just 5 progenitors. CARLIN (Cell 2020): inducible, breedable in mice, 44,000 barcodes.' }]},
+      { id:'base', lines:['Base Editors'], sub:'C→T or A→G, no DSBs', c:C.dna,
+        tip:'CBEs/ABEs make single-nucleotide conversions without double-strand breaks. No tape destruction. Scales to thousands of bits.',
+        ch:[{ id:'camera', lines:['CAMERA · DOMINO · BASELINE'], sub:'Science 2018 · bioRxiv 2025', c:C.dna,
+          tip:'CAMERA (Science 2018): first base-editing recorder. DOMINO (Mol Cell 2019): temporal AND/OR logic gates in DNA. BASELINE (bioRxiv 2025): 50 sites, 4,300 bits across ~40 cell divisions — state of the art.' }]},
+      { id:'prime', lines:['Symbol Writers'], sub:'programmed insertions', c:C.dna,
+        tip:'Prime editing writes specific, arbitrary sequences in a defined order. Temporal order is encoded in physical position along an array. Deterministic, not probabilistic.',
+        ch:[{ id:'engram', lines:['DNA Typewriter · ENGRAM · PEtracer'], sub:'Nature 2022-2025', c:C.dna,
+          tip:'DNA Typewriter (Nature 2022): each prime edit activates the next site. ENGRAM (Nature 2024): records TF activities as symbolic barcodes. PEtracer (Science 2025): lineage + MERFISH spatial readout in 260,000+ cells.' }]},
+      { id:'recomb', lines:['Recombinases'], sub:'state machine flips', c:C.dna,
+        tip:'Site-specific recombinases flip or excise DNA segments irreversibly. Each recombination is a state transition. ~15-21 bits/cell. Compatible with smFISH — preserves spatial context.',
+        ch:[{ id:'brainbow', lines:['Brainbow · Polylox · intMEMOIR'], sub:'Nature 2007 · Science 2021', c:C.dna,
+          tip:'Brainbow (Nature 2007): stochastic Cre-mediated color. Polylox (Nature 2017): 1.87M theoretical barcodes. intMEMOIR (Science 2021): Bxb1 serine integrase + smFISH spatial readout.' }]},
+      { id:'spacer', lines:['Spacer Acquisition & Transposons'], sub:'bacterial / native CRISPR', c:C.dna,
+        tip:'Bacteria hijack native CRISPR spacer integration to write RNA into DNA. Same logic as DNA Typewriter but discovered by evolution. Not yet validated in mammalian cells.',
+        ch:[{ id:'recordseq', lines:['Record-seq · TIGER · SCRIBE'], sub:'Science 2022 · Nat Biotech 2023', c:C.dna,
+          tip:'Record-seq (Science 2022): E. coli sentinels traversed mouse gut. TIGER (Nat Biotech 2023): quantitative per-transcript recording. All elegant. All stuck in bacteria.' }]}
+    ]};
+
+  const PROT_DATA = { id:'prot', lines:['Protein Assembly'], sub:'grow inside the cell', c:C.prot,
+    tip:'Engineered proteins self-assemble into expanding structures inside living cells. Time is encoded in spatial position — radial distance or linear banding. Read by confocal microscopy. No sequencing needed.',
+    ch:[
+      { id:'sphere', lines:['Spherical growth'], sub:'concentric rings', c:C.prot,
+        tip:'Protein subunits assemble into concentrically growing spheres. Radial distance = elapsed time. Reporter subunits record events; timestamp subunits anchor them in time.',
+        ch:[{ id:'gemini', lines:['GEMINI'], sub:'Nature 2026 · Johns Hopkins', c:C.prot,
+          tip:'GEMINI: NF-kB dynamics at 15-min resolution. Demonstrated in xenograft tumors and mouse brain neurons in vivo. Animals maintained normal behavior. Zero sequencing.' }]},
+      { id:'fiber', lines:['Fiber elongation'], sub:'linear epitope banding', c:C.prot,
+        tip:'Protein polymerizes as a growing linear fiber. Activity-dependent promoters drive epitope tags into specific positions. Position = time; tag identity = which TF was active.',
+        ch:[{ id:'cytotape', lines:['CytoTape'], sub:'Nature 2026 · U. Michigan', c:C.prot,
+          tip:'CytoTape: 5 simultaneous TF activities for 3 weeks at minutes-scale resolution in 14,000+ neurons in vivo. CREB and FOS can temporally decouple — invisible to any snapshot.' }]}
+    ]};
+
+  const RNA_DATA = { id:'rna', lines:['RNA Sequestration'], sub:'preserve transcripts', c:C.rna,
+    tip:'Rather than writing new information, these systems protect existing mRNA at a defined moment. Sub-classes differ in where the RNA goes: inside an endogenous compartment, or exported.',
+    ch:[
+      { id:'internal', lines:['Internal'], sub:'endogenous compartments', c:C.rna,
+        tip:'Uses vault ribonucleoprotein particles already present in the cell. Key conceptual move: preserve existing information rather than write new.',
+        ch:[{ id:'timevault', lines:['TimeVault'], sub:'Nature Methods 2025 · Church lab', c:C.rna,
+          tip:'TimeVault (Church lab): vault particles loaded at defined windows. Dual-channel for two time points from the same cells. Bulk sequencing only; no in vivo yet.' }]},
+      { id:'external', lines:['External'], sub:'secreted particles', c:C.rna,
+        tip:'Packages RNA into engineered VLPs or physically aspirates cytoplasm without killing the cell. Enables repeated transcriptome sampling from the same living culture.',
+        ch:[{ id:'courier', lines:['COURIER · VLPs · Live-seq (AFM)'], sub:'Cell 2023 · Nature 2022', c:C.rna,
+          tip:'COURIER (Cell 2023): VLPs export RNA non-destructively. Live-seq (Nature 2022): hollow AFM cantilever aspirates 1 pL cytoplasm at ~85-89% viability. Throughput ~1 cell/hour.' }]}
+    ]};
+
+  function rgba(hex,a){
+    const r=parseInt(hex.slice(1,3),16),g=parseInt(hex.slice(3,5),16),b=parseInt(hex.slice(5,7),16);
+    return `rgba(${r},${g},${b},${a})`;
+  }
+
+  // Assign fractional row indices to leaves, with small gaps between class groups
+  function assignRows(node, counter){
+    if(!node.ch||!node.ch.length){ node._row=counter.val++; return; }
+    node.ch.forEach(c=>assignRows(c,counter));
+  }
+  function getFirstLeaf(n){ return(!n.ch||!n.ch.length)?n:getFirstLeaf(n.ch[0]); }
+  function getLastLeaf(n){ return(!n.ch||!n.ch.length)?n:getLastLeaf(n.ch[n.ch.length-1]); }
+  function allN(n){ const r=[n]; if(n.ch) n.ch.forEach(c=>r.push(...allN(c))); return r; }
+  function allE(n){ const r=[]; if(n.ch) n.ch.forEach(c=>{r.push([n,c]);r.push(...allE(c));}); return r; }
+
+  function render(){
+    const container=document.getElementById('treeContainer');
+    container.innerHTML='';
+
+    // Layout constants
+    const MARGIN_TOP=28, ROW_H=54;
+    const COL0_X=18;   // class node left x
+    const COL1_X=208;  // sub-node left x
+    const COL2_X=368;  // leaf left x
+    const NW=[165,140,190], NH=[38,32,30], FS=[9.5,8.5,7.5];
+    const LH=13;
+    const ROOT_W=148, ROOT_H=40;
+    const GAP_ROWS=0.7; // visual gap between class groups
+
+    // Assign rows
+    const ctr={val:0};
+    assignRows(DNA_DATA,ctr);
+    ctr.val+=GAP_ROWS;
+    assignRows(PROT_DATA,ctr);
+    ctr.val+=GAP_ROWS;
+    assignRows(RNA_DATA,ctr);
+    const totalRows=ctr.val;
+
+    // Center non-leaf nodes over their children
+    function centerNodes(n){
+      if(!n.ch||!n.ch.length) return;
+      n.ch.forEach(c=>centerNodes(c));
+      n._row=(getFirstLeaf(n)._row+getLastLeaf(n)._row)/2;
+    }
+    centerNodes(DNA_DATA); centerNodes(PROT_DATA); centerNodes(RNA_DATA);
+
+    // Assign depth
+    function assignDepth(n,d){ n._depth=d; if(n.ch) n.ch.forEach(c=>assignDepth(c,d+1)); }
+    assignDepth(DNA_DATA,0); assignDepth(PROT_DATA,0); assignDepth(RNA_DATA,0);
+
+    const allNodes=[...allN(DNA_DATA),...allN(PROT_DATA),...allN(RNA_DATA)];
+    const allEdges=[...allE(DNA_DATA),...allE(PROT_DATA),...allE(RNA_DATA)];
+
+    function nodeLeftX(n){ return [COL0_X,COL1_X,COL2_X][Math.min(n._depth,2)]; }
+    function nodeW(n){ return NW[Math.min(n._depth,2)]; }
+    function nodeH(n){ return NH[Math.min(n._depth,2)]; }
+    function nodeCX(n){ return nodeLeftX(n)+nodeW(n)/2; }
+    function nodeCY(n){ return MARGIN_TOP+n._row*ROW_H; }
+
+    const junctionX=COL0_X+ROOT_W+18;
+    const rootCY=MARGIN_TOP+(getFirstLeaf(DNA_DATA)._row+getLastLeaf(RNA_DATA)._row)/2*ROW_H;
+    const rootCX=COL0_X+ROOT_W/2;
+
+    const SVG_W=COL2_X+NW[2]+14;
+    const SVG_H=MARGIN_TOP+totalRows*ROW_H+MARGIN_TOP;
+
+    let svg=`<svg id="treeSVG" viewBox="0 0 ${SVG_W} ${SVG_H}" width="${SVG_W}" height="${SVG_H}" xmlns="http://www.w3.org/2000/svg" style="display:block;font-family:'DM Mono',monospace;max-width:100%;">
+<defs><style>
+  .tn{cursor:pointer;} .tn rect{transition:opacity 0.15s;} .tn:hover rect{opacity:0.65;}
+  .tip-bg{pointer-events:none;} .tip-txt{pointer-events:none;font-family:'DM Mono',monospace;}
+</style></defs>`;
+
+    // Vertical spine from DNA class Y to RNA class Y
+    const spineTop=nodeCY(DNA_DATA), spineBottom=nodeCY(RNA_DATA);
+    svg+=`<line x1="${junctionX}" y1="${spineTop}" x2="${junctionX}" y2="${spineBottom}" stroke="${rgba(C.root,0.22)}" stroke-width="1.8"/>`;
+
+    // Root right edge → junction, then junction → root cy (if offset)
+    svg+=`<line x1="${COL0_X+ROOT_W}" y1="${rootCY}" x2="${junctionX}" y2="${rootCY}" stroke="${rgba(C.root,0.22)}" stroke-width="1.8"/>`;
+
+    // Junction → each class node left edge
+    for(const cls of [DNA_DATA,PROT_DATA,RNA_DATA]){
+      const cy=nodeCY(cls);
+      svg+=`<line x1="${junctionX}" y1="${cy}" x2="${COL0_X}" y2="${cy}" stroke="${rgba(cls.c,0.32)}" stroke-width="1.6"/>`;
+    }
+
+    // Edges within subtrees: elbow connectors
+    for(const [p,ch] of allEdges){
+      const pd=Math.min(p._depth,2);
+      const px=nodeLeftX(p)+nodeW(p); // parent right edge
+      const py=nodeCY(p);
+      const cx=nodeLeftX(ch);         // child left edge
+      const cy=nodeCY(ch);
+      const midX=(px+cx)/2;
+      if(Math.abs(py-cy)<1){
+        svg+=`<line x1="${px}" y1="${py}" x2="${cx}" y2="${cy}" stroke="${rgba(ch.c,0.28)}" stroke-width="1.3"/>`;
+      } else {
+        svg+=`<path d="M${px},${py} H${midX} V${cy} H${cx}" fill="none" stroke="${rgba(ch.c,0.28)}" stroke-width="1.3"/>`;
+      }
+    }
+
+    // Root node
+    const rootTextY=rootCY-ROOT_H/2+13;
+    svg+=`<g class="tn" data-id="root">
+<rect x="${COL0_X}" y="${rootCY-ROOT_H/2}" width="${ROOT_W}" height="${ROOT_H}" rx="8" fill="${rgba(C.root,0.15)}" stroke="${rgba(C.root,0.70)}" stroke-width="2"/>
+<text x="${rootCX}" y="${rootTextY}" text-anchor="middle" fill="${rgba(C.root,0.92)}" font-size="10" font-weight="600">Molecular Recorders</text>
+<text x="${rootCX}" y="${rootTextY+LH}" text-anchor="middle" fill="${rgba(C.root,0.42)}" font-size="7.5" font-style="italic">three substrate classes</text>
+</g>`;
+
+    // All class/sub/leaf nodes
+    for(const n of allNodes){
+      const d=Math.min(n._depth,2);
+      const x=nodeLeftX(n), y=nodeCY(n);
+      const w=NW[d], h=NH[d], fs=FS[d];
+      const lines=n.lines;
+      const hasSub=n.sub&&n.sub.length>0;
+      const textBlockH=lines.length*LH+(hasSub?LH*0.85:0);
+      const textY0=y-textBlockH/2+fs*0.85;
+      const fillA=[0.14,0.09,0.06][d];
+      const strokeA=d===0?0.65:0.48;
+      const sw=d===0?1.8:1.3;
+
+      svg+=`<g class="tn" data-id="${n.id}">`;
+      svg+=`<rect x="${x}" y="${y-h/2}" width="${w}" height="${h}" rx="6" fill="${rgba(n.c,fillA)}" stroke="${rgba(n.c,strokeA)}" stroke-width="${sw}"/>`;
+      lines.forEach((line,i)=>{
+        const esc=line.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+        svg+=`<text x="${x+w/2}" y="${textY0+i*LH}" text-anchor="middle" fill="${rgba(n.c,0.92)}" font-size="${fs}" font-weight="${d===0?'600':'400'}">${esc}</text>`;
+      });
+      if(hasSub){
+        const esc=n.sub.replace(/&/g,'&amp;');
+        svg+=`<text x="${x+w/2}" y="${textY0+lines.length*LH}" text-anchor="middle" fill="${rgba(n.c,0.38)}" font-size="${Math.max(6.5,fs*0.82)}" font-style="italic">${esc}</text>`;
+      }
+      svg+=`</g>`;
+    }
+
+    svg+=`<rect class="tip-bg" id="tipBg" x="0" y="0" width="2" height="2" rx="5" fill="#fff9f0" stroke="rgba(128,0,0,0.22)" stroke-width="1" opacity="0"/>`;
+    svg+=`<text class="tip-txt" id="tipTxt" x="0" y="0" fill="rgba(128,0,0,0.82)" font-size="9" opacity="0"></text>`;
+    svg+='</svg>';
+    container.innerHTML=svg;
+
+    const svgEl=document.getElementById('treeSVG');
+    const tipBg=document.getElementById('tipBg');
+    const tipTxt=document.getElementById('tipTxt');
+    const nodeMap={root:{tip:'Three fundamental classes, defined by what substrate stores the information.'}};
+    for(const n of allNodes) nodeMap[n.id]=n;
+
+    function showTip(id,sx,sy){
+      const n=nodeMap[id]; if(!n||!n.tip) return;
+      const mxW=Math.min(200,SVG_W*0.45);
+      const words=n.tip.split(' ');
+      const ls=[]; let ln='';
+      for(const w of words){
+        const t=ln?ln+' '+w:w;
+        if(t.length*5.1>mxW-14){ls.push(ln);ln=w;}else ln=t;
+      }
+      if(ln) ls.push(ln);
+      const pad=7,lh=12,bw=mxW,bh=ls.length*lh+pad*2;
+      let bx=sx+12,by=sy-bh/2;
+      if(bx+bw>SVG_W-4) bx=sx-bw-12;
+      if(by<4) by=4; if(by+bh>SVG_H-4) by=SVG_H-bh-4;
+      tipBg.setAttribute('x',bx); tipBg.setAttribute('y',by);
+      tipBg.setAttribute('width',bw); tipBg.setAttribute('height',bh);
+      tipBg.setAttribute('opacity','1');
+      tipTxt.setAttribute('x',bx+pad); tipTxt.setAttribute('y',by+pad+lh*0.8);
+      tipTxt.setAttribute('opacity','1');
+      tipTxt.innerHTML=ls.map((l,i)=>`<tspan x="${bx+pad}" dy="${i===0?0:lh}">${l.replace(/&/g,'&amp;').replace(/</g,'&lt;')}</tspan>`).join('');
+      svgEl.appendChild(tipBg); svgEl.appendChild(tipTxt);
+    }
+    function hideTip(){ tipBg.setAttribute('opacity','0'); tipTxt.setAttribute('opacity','0'); }
+    function evtXY(e){ const rect=svgEl.getBoundingClientRect(); return{sx:(e.clientX-rect.left)*SVG_W/rect.width,sy:(e.clientY-rect.top)*SVG_H/rect.height}; }
+    svgEl.addEventListener('mousemove',e=>{
+      const g=e.target.closest('.tn'); if(!g){hideTip();return;}
+      const{sx,sy}=evtXY(e); showTip(g.dataset.id,sx,sy);
+    });
+    svgEl.addEventListener('mouseleave',hideTip);
+    svgEl.addEventListener('touchstart',e=>{
+      const g=e.target.closest('.tn'); if(!g){hideTip();return;}
+      const t=e.touches[0]; const{sx,sy}=evtXY({clientX:t.clientX,clientY:t.clientY});
+      showTip(g.dataset.id,sx,sy); e.preventDefault();
+    },{passive:false});
+  }
+
+  render();
+})();
+</script><h2>Class 1: DNA Writers</h2>
+<p>Every system in this class has the same core logic: convert a transient biological signal into a permanent nucleotide-level change in the cell's genome. The genome is the tape. What varies is the precision of the writing instrument — from random scars all the way to deterministic, ordered, programmable insertions.</p>
+
+<h3>Indel writers: let CRISPR break things randomly</h3>
+<p>The first insight was simple to the point of embarrassing: CRISPR already generates random mutations every time it cuts. If you put a synthetic barcode array in the genome and let Cas9 cut it repeatedly, you get heritable, sequenceable, combinatorial scars. Different cells accumulate different patterns. Read the pattern, reconstruct who divided from whom.</p>
+<p>GESTALT (McKenna et al., Science, 2016) established this with an array of 10 Cas9 target sites in zebrafish embryos, generating around 4,200 unique alleles per fish — enough to reconstruct organ-level lineage relationships. The key finding was that more than 98% of adult blood derived from just 5 progenitor clones, which was only knowable from lineage data. CARLIN (Bowling et al., Cell, 2020) made the system genetically encoded and inducible in mice, breedable into any background, generating up to 44,000 transcribed barcodes.</p>
+<p>The ceiling is fundamental. Cas9 generates double-strand breaks, and NHEJ strongly favors deletions over insertions. Deletions that span multiple target sites collapse independent recording channels into a single unreadable scar. Worse: once a site gets deleted, it is gone — the recorder progressively destroys its own tape. A formal analysis concludes at roughly 10 to 20 effective bits per cell. These systems proved the concept. The concept being: something like this might be worth pursuing further.</p>
+
+<h3>Base editors: stop breaking things</h3>
+<p>The obvious fix is to stop generating double-strand breaks. Cytidine base editors (CBEs) convert C to T via cytidine deaminase fused to a nickase; adenine base editors (ABEs) convert A to G via an engineered TadA. Single, precise, predictable nucleotide conversions. No double-strand breaks. No deletion bias. No tape destruction.</p>
+<p>CAMERA (Tang &amp; Liu, Science, 2018) was the first explicit demonstration that base editing could function as a recorder, responding to doxycycline, IPTG, and Wnt signaling. DOMINO (Farzadfard et al., Molecular Cell, 2019) pushed further: guide RNAs that bind only after a prior mutation has occurred at a specific site, so one editing event unlocks the next. AND gates, OR gates, and temporal sequence detection implemented in DNA.</p>
+<p>The state-of-the-art as of early 2026 is BASELINE (Winter et al., bioRxiv, 2025). Nuclease-dead Cas12a fused to ABE8e targets 50 synthetic sites integrated at multiple copies per cell via piggyBac transposon. More than 4,300 bits of recording capacity — a 50-fold increase over anything before — with lineage reconstruction spanning an estimated 40 cell divisions. That is within the range of mammalian development from zygote to adult.</p>
+
+<h3>Symbol writers: deterministic tapes</h3>
+<p>Both indel and base-editing approaches write stochastic information — you make a cut or conversion and see what you get. Prime editing writes deterministic, arbitrary symbols: specific sequences, to specific locations, in a specific order. Not random mutations; programmable insertions.</p>
+<p>DNA Typewriter (Choi et al., Nature, 2022, Shendure lab) built the logical structure: a tandem array of partial CRISPR target sites where prime editing at the active site inserts a 5-bp sequence including a key that completes the spacer of the next downstream site, activating it. Recording proceeds strictly left-to-right. Temporal order is encoded in physical position along the tape. The team also encoded "WHAT HATH GOD WROUGHT?" into living cells, which is an understated flex.</p>
+<p>ENGRAM (Chen et al., Nature, 2024, Shendure lab) extended the architecture to biological signal recording. Cis-regulatory element-responsive promoters drive expression of pegRNAs encoding 4-bp signal-specific barcodes. Applied during mouse ESC differentiation into gastruloids, ENGRAM captured the activities of around 100 transcription factor consensus motifs across daily recording windows. PEtracer (Koblan et al., Science, 2025) solved the spatial readout problem, coupling prime editing lineage marks with MERFISH spatial transcriptomics across more than 260,000 cells simultaneously.</p>
+
+<h3>Recombinases: stateful state machines</h3>
+<p>Site-specific recombinases catalyze permanent DNA rearrangements at cognate recognition sites. Instead of accumulating mutations, they advance through discrete states. Each recombination event is a state transition — the cell is a state machine. Brainbow (Livet et al., Nature, 2007) uses stochastic Cre-mediated inversions to generate roughly 100 distinguishable color combinations in neurons. Beautiful, qualitative, used extensively in neuroscience for clonal analysis, fundamentally low information content. Polylox (Pei et al., Nature, 2017) scales this to up to 1.87 million theoretical barcodes from 10 loxP sites in alternating orientations at the Rosa26 locus. intMEMOIR (Chow et al., Science, 2021) uses Bxb1 serine integrase and is designed for sequential smFISH imaging in fixed tissue, preserving spatial context that sequencing destroys. The information ceiling of recombinase-based systems is around 15 to 21 bits per cell.</p>
+
+<h3>Spacer acquisition and transposons: the bacterial branch</h3>
+<p>Running in parallel is a separate evolutionary line that went into bacteria and largely never came out. These systems exploit the fact that CRISPR adaptive immune systems naturally record encounters as new spacers integrated into CRISPR arrays — temporal order encoded in physical position, exactly the same logic as DNA Typewriter but discovered by evolution. Record-seq (Schmidt &amp; Platt, Nature, 2018) hijacks this with an RT-Cas1/Cas2 complex that captures intracellular RNA as new CRISPR spacers. The in vivo follow-up (Schmidt et al., Science, 2022) is the most successful deployment of any molecular recorder in a complex biological environment: engineered E. coli sentinel cells traversed the mouse GI tract recording transcriptional histories, recoverable from fecal samples. TIGER (Jiao et al., Nature Biotechnology, 2023) records individual specified transcripts quantitatively. The only system with this capability. In bacteria.</p>
+<p>No validated mammalian spacer acquisition system exists as of early 2026. The chromatin environment, nuclear compartmentalization, and lack of compatible PAM recognition sequences have resisted years of effort.</p>
+<hr>
+
+<h2>Class 2: Protein Assembly</h2>
+<p>The two most recent additions to the recorder zoo are the most alien to everything that came before them. They abandoned DNA as the substrate entirely, abandoned sequencing as the readout, and built something closer to dendrochronology than genomics. Time is encoded in the physical structure of a growing protein, readable by confocal microscopy.</p>
+<p>GEMINI (Yan et al., Nature, 2026, Dingchang Lin lab, Johns Hopkins) — Granularly Expanding Memory for Intracellular Narrative Integration. Computationally designed protein subunits self-assemble into hierarchical structures: first cages, then isotropic spherical particles that grow concentrically. Three subunit types serve distinct functions: blank subunits drive steady predictable growth, reporter subunits transduce cellular events into recordable fluorescent signals, and timestamp subunits create temporal landmarks. Radial distance from center encodes elapsed time. NF-kB transcriptional dynamics were resolved at 15-minute resolution. Demonstrated in cultured mammalian cells, in xenograft tumors, and in mouse brain neurons in vivo. Animals maintained normal motor and cognitive behavior. No sequencing.</p>
+<p>CytoTape (Linghu et al., Nature, 2026, Linghu lab, University of Michigan) uses the complementary geometry: elongating fiber-like structures rather than spheres. An engineered protein polymerizes as a growing fiber; activity-dependent promoters drive epitope tag incorporation into specific positions along the fiber. Five simultaneous transcription factor activities — pCREB, Fos, Arc, Egr1, NPAS4 — recorded as distinct immunofluorescence-readable epitope bands distributed along single fibers. Continuous recording for up to three weeks with minutes-scale temporal resolution. Demonstrated across up to 14,123 neurons in vivo. The key biological finding: CREB activation and FOS expression can temporally decouple upon MEK-ERK pathway inhibition. That is a real biological result that no snapshot-based approach could have produced.</p>
+<p>GEMINI and CytoTape answer complementary questions. GEMINI records when things happened; CytoTape records what transcription factors were active. Neither requires sequencing. Both preserve spatial context. Both have been demonstrated in living animals.</p>
+<hr>
+
+<h2>Class 3: RNA Sequestration</h2>
+<p>Rather than writing new information into DNA or building a physical structure, RNA sequestration systems take a conceptually different approach: preserve existing mRNA at a defined moment by protecting it from degradation. The information was already there. The challenge is keeping it.</p>
+<p>The two sub-classes differ in where the RNA goes. Internal sequestration uses compartments already present in the cell. External sequestration packages RNA into engineered containers that can be harvested without destroying the cell.</p>
+<p><strong>TimeVault</strong> (Friedman et al., Nature Methods, 2025, Church lab) uses vault particles — endogenous hollow ribonucleoprotein compartments — as temporal snapshot capsules. At a user-defined time point, transcription is chemically arrested and mRNA is loaded into vaults. Later time points are loaded into vaults in a different channel. Both are read simultaneously by sequencing. The result: paired snapshots from the same cells at different times, without lysing them between measurements. Current limitations: bulk RNA-seq only, recording windows limited to roughly one week, no in vivo demonstration. The conceptual move is genuinely different from everything else here — protecting existing information rather than writing new.</p>
+<p><strong>COURIER</strong> (Horns et al., Cell, 2023) and related VLP-based approaches engineer virus-like particles to package and export cellular RNA non-destructively. The cell survives; RNA is collected from the secreted VLPs. Repeated transcriptome sampling from the same living culture over time, without ever destroying the cells.</p>
+<p>Live-seq sits adjacent to this class. A hollow AFM cantilever with a 400 to 600 nm aperture physically penetrates the cell membrane and aspirates roughly 1 picoliter of cytoplasm via negative pressure — about 1 picogram of RNA. The cell survives at 85 to 89% viability. Live-seq (Chen et al., Nature, 2022, Deplancke and Vorholt labs) found that basal <em>Nfkbia</em> expression was the strongest negative predictor of LPS response rate in macrophages — information that is fundamentally invisible to standard single-cell sequencing because the cell is destroyed before its response can be observed. Throughput is approximately one cell per hour. Somebody needs to parallelize the AFM cantilever.</p>
+<hr>
+
+<h2>The gap</h2>
+<p>The point of this tour is partly that these systems are interesting, and partly to establish how much of the problem remains unsolved.</p>
+
+
+<img style="width:100%;border-radius:4px;margin:2rem 0 0.4rem;display:block;filter:sepia(0.1) brightness(0.97);" src="https://images.unsplash.com/photo-1559757175-5700dde675bc?w=900&q=80&auto=format&fit=crop" alt="Confocal microscopy of fluorescent neurons — protein assembly recorders" loading="lazy">
+<p style="font-family:'DM Mono',monospace;font-size:0.73rem;color:var(--ink-faint);margin:0 0 1.8rem;letter-spacing:0.02em;">CytoTape and GEMINI are read by confocal microscopy like this — spatial position along a protein fiber or sphere encodes time. No sequencing required.</p>
+
+<div class="gap-figure">
+  <div class="gap-bar-row">
+    <div class="gap-label">full trajectory needed</div>
+    <div class="gap-bar-track"><div class="gap-bar-fill" style="width:100%;background:rgba(128,0,0,0.18);"></div></div>
+    <div class="gap-value">~10⁶–10⁸ bits</div>
+  </div>
+  <div class="gap-bar-row">
+    <div class="gap-label">BASELINE — DNA Writer</div>
+    <div class="gap-bar-track"><div class="gap-bar-fill" style="width:0.43%;background:#7b1a1a;min-width:3px;"></div></div>
+    <div class="gap-value">4,300 bits</div>
+  </div>
+  <div class="gap-bar-row">
+    <div class="gap-label">TimeVault — RNA Sequest.</div>
+    <div class="gap-bar-track"><div class="gap-bar-fill" style="width:0.5%;background:#1a3a6a;min-width:3px;"></div></div>
+    <div class="gap-value">~5k bits*</div>
+  </div>
+  <div class="gap-bar-row">
+    <div class="gap-label">GEMINI / CytoTape — Protein</div>
+    <div class="gap-bar-track"><div class="gap-bar-fill" style="width:0.06%;background:#2d5a1a;min-width:3px;"></div></div>
+    <div class="gap-value">~600 bits†</div>
+  </div>
+  <div class="gap-bar-row">
+    <div class="gap-label">GESTALT — Gen 1 indel</div>
+    <div class="gap-bar-track"><div class="gap-bar-fill" style="width:0.001%;background:#c88;min-width:2px;"></div></div>
+    <div class="gap-value">~15 bits</div>
+  </div>
+  <p class="gap-note">* per snapshot window, not accumulated longitudinally &nbsp;† estimated from 5 TF channels × ~20 time bins × ~6 bits/bin</p>
+</div>
+
+<p>A full developmental trajectory involves roughly 40 cell divisions over 20 days. A single-cell transcriptome snapshot contains around 1,000 to 5,000 bits of meaningful information. Recording transcriptome snapshots hourly over 20 days requires on the order of 960,000 bits per cell. Add signaling pathway states, epigenetic dynamics, and mechanical history, and the requirement approaches 10<sup>6</sup> to 10<sup>8</sup> bits per cell per developmental trajectory. The best current DNA-based recorder stores 4,300 bits. The gap is 3 to 5 orders of magnitude.</p>
+<p>Temporal resolution is the deepest bottleneck. Most DNA-based recorders operate at cell-division timescales because editing and dilution both depend on replication. Signaling dynamics occur on seconds-to-minutes timescales — 1,000-fold faster. GEMINI and CytoTape partially bridge the gap at 15 minutes and minutes-scale respectively, but they record transcriptional output, not upstream signaling dynamics. The sub-minute signaling regime remains entirely unrecorded in any living mammalian cell. Mechanical signal recorders — systems capturing force, compression, or stretch history — do not exist as published technologies.</p>
+<p>What actually works now, honestly, is a combination across all three classes. No single technology captures everything. The systems that work best in vivo are the ones with the lowest information capacity. The systems with the highest capacity have not yet been demonstrated in living animals. The most interesting experiments of the next decade will probably be the ones that co-deploy two or three simultaneously — reading them out together through spatial multi-omics platforms — and start closing the gap between what cells know about themselves and what we can learn from them.</p>
+</article>
+
+<nav class="post-nav">
+  <a href="snapshot.html" class="nav-link prev">&#8592; The Cell Is Not a Photograph</a>
+  <a href="../index.html" class="nav-home">All writing</a>
+  <a href="dynamics.html" class="nav-link next">The Math That Biology Pretends It Doesn't Need &#8594;</a>
+</nav>
+<script>
+  const bar = document.getElementById('progress-bar');
+  window.addEventListener('scroll', () => {
+    const doc = document.documentElement;
+    const scrolled = doc.scrollTop;
+    const total = doc.scrollHeight - window.innerHeight;
+    bar.style.width = (total > 0 ? (scrolled/total)*100 : 0) + '%';
+  }, {passive:true});
+</script>
+</body>
+</html>

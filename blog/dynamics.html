@@ -1,0 +1,900 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>The Math That Biology Pretends It Doesn't Need — Ahmed Moselhi</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;1,400&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    *,*::before,*::after{box-sizing:border-box;}
+    :root{--bg:#FFF5E6;--ink:#800000;--ink-faint:#a05050;--rule:rgba(128,0,0,0.15);--code-bg:rgba(128,0,0,0.06);--max-w:680px;}
+    html{scroll-behavior:smooth;}
+    body{margin:0;background:var(--bg);color:var(--ink);font-family:'Lora',Georgia,serif;font-size:1.05rem;line-height:1.75;}
+    .topbar{position:sticky;top:0;z-index:10;background:var(--bg);border-bottom:1px solid var(--rule);padding:0.6rem 1.5rem;display:flex;justify-content:space-between;align-items:center;font-size:0.82rem;font-family:'DM Mono',monospace;}
+    .topbar a{color:var(--ink-faint);text-decoration:none;}.topbar a:hover{color:var(--ink);text-decoration:underline;}
+    .topbar .site-name{font-weight:500;color:var(--ink);}
+    article{max-width:var(--max-w);margin:0 auto;padding:0 1.5rem 6rem;}
+    h1{font-size:clamp(1.8rem,5vw,2.6rem);font-weight:600;line-height:1.2;margin:0 0 0.5rem;letter-spacing:-0.02em;}
+    .post-meta{font-family:'DM Mono',monospace;font-size:0.78rem;color:var(--ink-faint);margin-bottom:2.8rem;letter-spacing:0.03em;}
+    h2{font-size:1.35rem;font-weight:600;margin:2.8rem 0 0.6rem;letter-spacing:-0.01em;}
+    h3{font-size:1.1rem;font-weight:600;margin:2rem 0 0.4rem;font-style:italic;}
+    p{margin:0 0 1.4rem;}
+    hr{border:none;border-top:1px solid var(--rule);margin:2.5rem 0;}
+    strong{font-weight:600;}em{font-style:italic;}
+    a{color:var(--ink);text-decoration:underline;text-decoration-color:var(--rule);text-underline-offset:3px;}
+    a:hover{text-decoration-color:var(--ink);}
+    .eq{font-family:'DM Mono',monospace;font-size:0.9rem;background:var(--code-bg);border-left:2px solid var(--rule);padding:0.6rem 1rem;margin:1.2rem 0 1.4rem;overflow-x:auto;white-space:nowrap;}
+    sup{font-size:0.75em;}
+    #progress-bar{position:fixed;top:0;left:0;height:2px;background:var(--ink);width:0%;z-index:100;transition:width 0.1s linear;}
+
+    /* ── HEADER IMAGE ── */
+    .hero{width:100%;height:340px;object-fit:cover;display:block;margin-bottom:2.8rem;filter:sepia(0.15) brightness(0.95);}
+    /* ── INLINE IMAGES ── */
+    .post-img{width:100%;border-radius:4px;margin:2rem 0 0.5rem;display:block;filter:sepia(0.1) brightness(0.97);}
+    .img-caption{font-family:'DM Mono',monospace;font-size:0.73rem;color:var(--ink-faint);margin:0 0 1.8rem;letter-spacing:0.02em;}
+
+    /* ── DEMO BOXES ── */
+    .demo{margin:2.2rem 0;border:1px solid var(--rule);border-radius:6px;overflow:hidden;}
+    .demo-head{background:var(--code-bg);padding:0.5rem 1rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:0.5rem;}
+    .demo-head-label{font-family:'DM Mono',monospace;font-size:0.78rem;color:var(--ink-faint);letter-spacing:0.04em;}
+    .demo-head-title{font-family:'DM Mono',monospace;font-size:0.82rem;color:var(--ink);font-weight:500;}
+    .demo-canvas-wrap{background:#fff9f0;line-height:0;}
+    .demo-canvas-wrap canvas{display:block;width:100%;}
+    .demo-controls{padding:0.55rem 1rem;display:flex;gap:0.5rem;flex-wrap:wrap;align-items:center;background:var(--code-bg);border-top:1px solid var(--rule);}
+    .demo-controls label{font-family:'DM Mono',monospace;font-size:0.75rem;color:var(--ink-faint);white-space:nowrap;}
+    .demo-controls input[type=range]{flex:1;min-width:80px;max-width:160px;accent-color:#800000;}
+    .demo-btn{font-family:'DM Mono',monospace;font-size:0.75rem;color:var(--ink);background:transparent;border:1px solid var(--rule);padding:0.25rem 0.7rem;border-radius:3px;cursor:pointer;white-space:nowrap;}
+    .demo-btn:hover{background:rgba(128,0,0,0.08);}
+    .demo-caption{font-family:'DM Mono',monospace;font-size:0.73rem;color:var(--ink-faint);padding:0.4rem 1rem 0.55rem;line-height:1.5;}
+
+    .post-nav{max-width:var(--max-w);margin:0 auto;padding:2rem 1.5rem 4rem;display:grid;grid-template-columns:1fr auto 1fr;gap:1rem;align-items:center;border-top:1px solid var(--rule);font-family:'DM Mono',monospace;font-size:0.8rem;}
+    .post-nav .nav-link{color:var(--ink-faint);text-decoration:none;}.post-nav .nav-link:hover{color:var(--ink);}
+    .post-nav .nav-link.next{text-align:right;}
+    .post-nav .nav-home{text-align:center;color:var(--ink-faint);text-decoration:none;}.post-nav .nav-home:hover{color:var(--ink);}
+    @media(max-width:600px){.post-nav{grid-template-columns:1fr;text-align:center;}.post-nav .nav-link.next{text-align:center;}}
+  </style>
+</head>
+<body>
+<div id="progress-bar"></div>
+<nav class="topbar">
+  <span class="site-name"><a href="../index.html">Ahmed Moselhi</a></span>
+  <a href="../index.html">&#8592; Writing</a>
+</nav>
+<article>
+
+<!-- Header image -->
+<img class="hero" src="https://images.unsplash.com/photo-1507413245164-6160d8298b31?w=1200&q=80&auto=format&fit=crop" alt="Abstract network of light, resembling a gene regulatory network" loading="lazy">
+
+<h1>The Math That Biology Pretends It Doesn't Need</h1>
+<p class="post-meta">September 2025 &middot; mathematical biology, dynamical systems</p>
+
+<p>
+Here is a fact that should be more disorienting than it is: gene expression at the single-molecule level looks like someone flipping coins. The process by which RNA polymerase finds a promoter, the dwell times of transcription factors at their binding sites, the timing of individual splicing events — all of it is stochastic. Protein copy numbers between genetically identical sister cells, seconds after division, can differ by factors of two or three. And yet development is reproducible. Five fingers, every time, across billions of people and hundreds of millions of years of evolution.
+</p>
+<p>
+The naive answer — the genome as blueprint, genes as instructions — breaks down the moment you look at it carefully. A blueprint specifies what to build. The genome specifies proteins and their interactions. These are not the same thing. The genome does not say "make a kidney with one million nephrons." It encodes transcription factors and signaling cascades and structural proteins, and somehow, reliably, a kidney results. The reliability has to come from the architecture of the system, not from explicit specification of every outcome.
+</p>
+<p>
+That architectural reliability is what mathematical biology is trying to describe. The frameworks it has developed over the last sixty years are not just convenient approximations — they make specific, testable predictions about which cell states are stable, how development can fail, how much information a signaling pathway can carry, and why some perturbations derail fate commitment while others are corrected automatically. What follows is those frameworks, grounded in the biology that motivated each one.
+</p>
+
+<hr>
+<h2>Attractors: the mathematical definition of a cell type</h2>
+
+<p>
+Start with the most basic question: what is a cell type? The traditional answer is transcriptional — a cell type is defined by its gene expression profile. But expression profiles are distributed, not precise. Different cells of the "same type" differ substantially in the expression levels of most genes. What makes them the same type is not a fixed expression state but convergent behavior: perturb them, and they return to the same neighborhood.
+</p>
+<p>
+This is the definition of an attractor in dynamical systems. For a system described by dx/dt = f(x), where x is the gene expression state and f captures the regulatory interactions, a stable fixed point x* is a state where f(x*) = 0 and all perturbations decay back to it. The mathematical condition is that all eigenvalues of the Jacobian matrix J = ∂f/∂x at x* have negative real parts. A cell type, in this language, is a stable attractor of the gene regulatory network dynamics.
+</p>
+<p>
+Kauffman proposed this in 1969 (Journal of Theoretical Biology), before the tools existed to test it. By 2005, Huang and colleagues had the data: tracking differentiation of hematopoietic progenitors in a 2,773-dimensional gene expression space, they showed that trajectories from many different starting states converged on the same attractors — the gene expression profiles of differentiated blood cell types. The landscape was real. The attractors were measurable.
+</p>
+<p>
+The most consequential prediction of this framework is about fate commitment. A bifurcation — a qualitative change in the number or stability of fixed points — is the mathematical event of differentiation. In a pitchfork bifurcation, one stable state becomes unstable and two new stable states emerge: one valley splits into two, and noise determines which the cell falls into. In a saddle-node bifurcation, two fixed points collide and annihilate, forcing the cell into a different attractor with no way back. The GATA1/PU.1 toggle switch in blood development, where mutual repression between two transcription factors creates bistability, is the canonical biological example. Huang and colleagues (Developmental Biology, 2007) showed that the uncommitted progenitor state is a saddle point near the boundary between basins — metastable, easily perturbed, destabilized by small changes in external signals.
+</p>
+
+<img class="post-img" src="https://images.unsplash.com/photo-1532187863486-abf9dbad1b69?w=900&q=80&auto=format&fit=crop" alt="Blood cells flowing — hematopoiesis, the canonical bifurcation system" loading="lazy">
+<p class="img-caption">Hematopoiesis — the differentiation of blood cells — is the canonical attractor bifurcation system. The GATA1/PU.1 toggle is the best-characterized bistable switch in mammalian development.</p>
+
+<p>
+The reason this matters practically is that it changes what you look for when development goes wrong. If a cell type is a stable attractor, then pathology — cancer, for instance — is what happens when the landscape is deformed: barriers lowered, new attractors created, old ones eliminated. A cancer cell is not a cell that has simply accumulated random damage. It is often a cell that has settled into an attractor that normal development never visits. Weinberg's "hallmarks of cancer" are, in dynamical systems language, the regulatory changes that reshape the landscape to make the cancer attractor accessible and stable. The implications for therapy are direct: treat cancer as a landscape deformation problem rather than a mutation enumeration problem.
+</p>
+<p>
+The same framework is what Waddington was trying to capture with "canalization" — the tendency of development to reach the same endpoint despite perturbation. What he drew as hillsides and valleys in 1957 is, in this language, the basin structure of an attractor landscape shaped by regulatory network topology. This is why Kauffman's 1969 proposal and Wang's 2008 derivation matter not just as theoretical results but as foundations for the argument made in the next post in this series: that the landscape is an <em>empirical object</em>, measurable from trajectory data, and that understanding its topology — where the basins are, where the separatrices run, what the barriers look like — is precisely what organoid engineering lacks. You cannot guide self-organization toward a target cell type without knowing the shape of the landscape the cells are navigating.
+</p>
+
+<!-- DEMO: Attractor landscape & bifurcation -->
+<div class="demo">
+  <div class="demo-head">
+    <span class="demo-head-label">interactive</span>
+    <span class="demo-head-title">Waddington landscape — attractors, bifurcation, and fate commitment</span>
+  </div>
+  <div class="demo-canvas-wrap"><canvas id="cA"></canvas></div>
+  <div class="demo-controls">
+    <label>mutual repression: <input type="range" id="sArep" min="0.3" max="3.5" step="0.05" value="2.0"></label>
+    <button class="demo-btn" id="sAclear">clear</button>
+  </div>
+  <div class="demo-caption">A 1D cross-section of the Waddington landscape for a bistable toggle switch (like GATA1/PU.1 in blood development). Dots are individual cells rolling stochastically toward fate attractors. The quasi-potential U(x) is drawn — valleys are stable cell types, the peak is the unstable saddle between them. Reduce mutual repression: watch the barrier shrink and the bifurcation collapse two fates into one. Click anywhere on the landscape to drop a new cell.</div>
+</div>
+<script>
+(function(){
+  const cv = document.getElementById('cA');
+  let ctx, W, H, dpr;
+  let rep = 2.0;
+  let particles = [], trails = [];
+
+  function setup(){
+    const cssW = Math.min(640, cv.parentElement.clientWidth||640);
+    const cssH = 240;
+    dpr = window.devicePixelRatio||1;
+    cv.width = cssW*dpr; cv.height = cssH*dpr;
+    cv.style.width = cssW+'px'; cv.style.height = cssH+'px';
+    ctx = cv.getContext('2d'); ctx.scale(dpr,dpr);
+    W=cssW; H=cssH;
+    if(!particles.length) initParticles();
+    draw();
+  }
+
+  // Quasi-potential: U(x) = x^4 - a*x^2  where a = rep - 0.5
+  // When a <= 0: single well at x=0 (monostable)
+  // When a > 0: two wells at x=±sqrt(a/2), barrier at x=0 (bistable)
+  // This gives a genuine pitchfork bifurcation at a=0 (rep=0.5)
+  function getA(){ return rep - 0.5; }
+  function U(x){
+    const a=getA();
+    return Math.pow(x,4) - a*Math.pow(x,2) + 0.06*x; // tiny asymmetry
+  }
+  function dUdx(x){
+    const a=getA();
+    return 4*Math.pow(x,3) - 2*a*x + 0.06;
+  }
+
+  const XMIN=-1.65, XMAX=1.65;
+  const UMIN=-2.2, UMAX=3.0;
+  const PAD={l:40,r:18,t:20,b:28};
+  function px(x){ return PAD.l+(x-XMIN)/(XMAX-XMIN)*(W-PAD.l-PAD.r); }
+  function py(u){ const u2=Math.min(u,UMAX); return H-PAD.b-(u2-UMIN)/(UMAX-UMIN)*(H-PAD.t-PAD.b); }
+
+  function initParticles(){
+    particles=[];
+    for(let i=0;i<16;i++){
+      particles.push({ x:(Math.random()-0.5)*0.3, v:0,
+        col:`hsl(${12+i*9},60%,${42+i%4*5}%)` });
+    }
+  }
+
+  function stepParticles(){
+    const dt=0.05, friction=1.0, noise=0.18;
+    for(const p of particles){
+      const du=dUdx(p.x);
+      const n=(Math.random()-0.5)*2*Math.sqrt(2*noise/dt);
+      p.v += (-du - friction*p.v + n*Math.sqrt(dt))*dt;
+      p.x  = Math.max(XMIN+0.05, Math.min(XMAX-0.05, p.x+p.v*dt));
+    }
+  }
+
+  let anim=null;
+  function draw(){
+    ctx.clearRect(0,0,W,H);
+    ctx.fillStyle='#fff9f0'; ctx.fillRect(0,0,W,H);
+
+    // Landscape fill
+    ctx.beginPath();
+    const N=300;
+    for(let i=0;i<=N;i++){
+      const x=XMIN+i/N*(XMAX-XMIN);
+      const u=U(x), cx=px(x), cy=py(u);
+      i===0?ctx.moveTo(cx,cy):ctx.lineTo(cx,cy);
+    }
+    ctx.lineTo(W-PAD.r, H-PAD.b); ctx.lineTo(PAD.l, H-PAD.b); ctx.closePath();
+    ctx.fillStyle='rgba(128,0,0,0.06)'; ctx.fill();
+
+    // Landscape curve
+    ctx.beginPath();
+    for(let i=0;i<=N;i++){
+      const x=XMIN+i/N*(XMAX-XMIN);
+      const u=Math.min(U(x),UMAX);
+      i===0?ctx.moveTo(px(x),py(u)):ctx.lineTo(px(x),py(u));
+    }
+    ctx.strokeStyle='rgba(128,0,0,0.75)'; ctx.lineWidth=2.5; ctx.stroke();
+
+    // Axis labels
+    ctx.font=`8px "DM Mono",monospace`; ctx.fillStyle='rgba(128,0,0,0.38)';
+    ctx.textAlign='center'; ctx.fillText('gene expression (e.g. GATA1 vs PU.1)',PAD.l+(W-PAD.l-PAD.r)/2,H-5);
+    ctx.save(); ctx.translate(11,H/2); ctx.rotate(-Math.PI/2);
+    ctx.fillText('U(x) — quasi-potential',0,0); ctx.restore();
+
+    // Fate labels
+    const bistable = rep>0.95;
+    ctx.font=`8.5px "DM Mono",monospace`; ctx.textAlign='center';
+    if(bistable){
+      ctx.fillStyle='rgba(128,0,0,0.5)';
+      ctx.fillText('PU.1 fate',px(-1.05),py(U(-1.05))-12);
+      ctx.fillText('GATA1 fate',px(1.05),py(U(1.05))-12);
+      // Saddle label
+      const sadX=0.02;
+      ctx.fillStyle='rgba(128,0,0,0.35)';
+      ctx.fillText('saddle (separatrix)',px(sadX),py(U(sadX))-8);
+    } else {
+      ctx.fillStyle='rgba(80,120,0,0.6)';
+      ctx.fillText('single stable fate',px(0.05),py(U(0.05))-12);
+    }
+
+    // Particles — drawn ON the landscape curve
+    stepParticles();
+    for(const p of particles){
+      const u=U(p.x);
+      if(u>UMAX) continue;
+      ctx.beginPath(); ctx.arc(px(p.x), py(u)-6, 5.5, 0, Math.PI*2);
+      ctx.fillStyle=p.col; ctx.fill();
+      ctx.strokeStyle='rgba(255,255,255,0.4)'; ctx.lineWidth=1; ctx.stroke();
+    }
+
+    // Status label
+    ctx.font=`9px "DM Mono",monospace`; ctx.textAlign='right';
+    ctx.fillStyle=bistable?'rgba(128,0,0,0.6)':'rgba(60,110,0,0.65)';
+    ctx.fillText(bistable?'bistable — two fates':'monostable — one fate (barrier gone)', W-PAD.r, 16);
+
+    if(anim) anim=requestAnimationFrame(draw);
+  }
+
+  // Click to add cell
+  cv.addEventListener('click',e=>{
+    const rect=cv.getBoundingClientRect();
+    const cx_=(e.clientX-rect.left)*W/rect.width;
+    const x=XMIN+(cx_-PAD.l)/(W-PAD.l-PAD.r)*(XMAX-XMIN);
+    if(x<XMIN||x>XMAX) return;
+    particles.push({x:Math.max(XMIN+0.05,Math.min(XMAX-0.05,x)),v:0,col:'rgba(180,80,0,0.85)'});
+    if(particles.length>24) particles.shift();
+  });
+
+  document.getElementById('sArep').addEventListener('input',e=>{rep=+e.target.value;});
+  document.getElementById('sAclear').addEventListener('click',()=>{initParticles();});
+
+  const obs=new IntersectionObserver(ent=>{
+    if(ent[0].isIntersecting){ if(!anim){anim=1;requestAnimationFrame(draw);} }
+    else{ anim=null; }
+  },{threshold:0.1});
+  obs.observe(cv);
+
+  window.addEventListener('resize',setup);
+  setup();
+})();
+</script>
+
+
+<hr>
+<h2>Noise: not something to be eliminated, but something to be understood</h2>
+
+<p>
+The standard intuition about biological noise is that it is a problem — a consequence of working with small numbers of molecules that evolution has partially suppressed. The actual picture is considerably stranger. Elowitz and colleagues (Science, 2002) placed two identical promoters in E. coli driving different fluorescent proteins and decomposed cell-to-cell variation into intrinsic noise (specific to the stochastic process of individual gene expression events) and extrinsic noise (global cellular differences in ribosome counts, growth rate, and so on). Both were substantial. Neither could be easily eliminated. And subsequent work showed that cells had evolved machinery not just to tolerate noise but to exploit it.
+</p>
+<p>
+The clearest example is bacterial persistence. Balaban and colleagues (Science, 2004) showed that E. coli populations maintain a small fraction of slow-growing "persister" cells that survive antibiotic treatment — not because of resistance mutations, but because a toxin-antitoxin module stochastically drives a small number of cells into a growth-arrested state. The population bets across the distribution: most cells grow fast in normal conditions, a few maintain dormancy as antibiotic insurance. Noise drives barrier-crossing between the two states. Remove the noise and you remove the bet-hedging. It is a deliberate feature.
+</p>
+<p>
+In development, symmetry-breaking at bifurcation points is often initiated by noise. When a progenitor sits near a saddle point between two fates, the fluctuations in transcription factor concentrations — the same intrinsic noise Elowitz measured — push it across the basin boundary. Maamar, Raj, and Dubnau (Science, 2007) showed this directly for Bacillus subtilis competence: reducing transcriptional noise by replacing the native promoter with a lower-noise synthetic version dramatically reduced the fraction of cells entering the competent state. The stochastic commitment was not incidental. It was the mechanism. A 2025 paper in Developmental Cell (Garcia-Blay and colleagues) identified 32 proteins that specifically regulate transcriptional noise in mammalian cells, some of which alter noise without changing mean expression. Cells have dedicated molecular hardware for noise management.
+</p>
+<p>
+This has a direct consequence for tissue engineering that the next post examines in detail. When organoids fail to pattern correctly, the standard explanation is batch-to-batch variation in culture conditions. The attractor and noise frameworks suggest something more specific: early bifurcation events — the first hours of self-organization — are the moments where noise level relative to barrier height determines fate. A small stochastic fluctuation at the wrong moment propagates through subsequent cell divisions and contacts, producing an organoid committed to the wrong trajectory long before any morphological defect is visible. Understanding noise at bifurcation points is therefore not an academic exercise. It is the prerequisite for knowing where in development to intervene — and the demonstration that intervening after commitment is too late.
+</p>
+
+
+<!-- DEMO: Stochastic fate switching -->
+<div class="demo">
+  <div class="demo-head">
+    <span class="demo-head-label">interactive</span>
+    <span class="demo-head-title">Stochastic fate switching — noise unlocks an inaccessible outcome</span>
+  </div>
+  <div class="demo-canvas-wrap"><canvas id="cN"></canvas></div>
+  <div class="demo-controls">
+    <label>noise D: <input type="range" id="sNnoise" min="0.002" max="0.32" step="0.002" value="0.006"></label>
+    <button class="demo-btn" id="sNrun">release cells</button>
+    <button class="demo-btn" id="sNclear">clear</button>
+  </div>
+  <div class="demo-caption">The landscape is asymmetric — the left basin (dark red) is deep and always the deterministic outcome; the right basin (blue) is shallower but still a genuine attractor, only reachable by crossing the barrier stochastically. At low noise all cells commit to the default fate. Increase noise and watch some cells gain enough stochastic energy to cross the barrier and commit to the noise-driven fate. The bar chart tracks the population split across all runs. This is the mechanism of bacterial persistence and B. subtilis competence switching.</div>
+</div>
+<script>
+(function(){
+  const cv = document.getElementById('cN');
+  let ctx, W, H, dpr;
+  let noise = 0.006;
+
+  // Committed fate tracking across all runs
+  let totalLeft=0, totalRight=0;
+
+  // Currently animating cells
+  let activeCells = [];
+  let animId = null;
+
+  function setup(){
+    const cssW = Math.min(640, cv.parentElement.clientWidth||640);
+    const cssH = 250;
+    dpr = window.devicePixelRatio||1;
+    cv.width = cssW*dpr; cv.height = cssH*dpr;
+    cv.style.width = cssW+'px'; cv.style.height = cssH+'px';
+    ctx = cv.getContext('2d'); ctx.scale(dpr,dpr);
+    W=cssW; H=cssH;
+    redraw();
+  }
+
+  // Asymmetric well: SCALE=0.5, TILT=0.3
+  // U(-1)≈-1.7 (deep default), U(+1)≈-0.3 (shallow alternative)
+  // Barrier at x≈0
+  const SC=0.5, TL=0.3;
+  function U(x){ return SC*(x*x*x*x-2*x*x)+TL*x; }
+  function dU(x){ return SC*(4*x*x*x-4*x)+TL; }
+
+  // Layout: landscape left 60%, bar chart right 40%
+  const LP={l:38,r:6,t:24,b:30};
+  const XMIN=-1.65, XMAX=1.65, UMIN=-1.9, UMAX=0.45;
+
+  function lw(){ return W*0.60-LP.l-LP.r; }
+  function lh(){ return H-LP.t-LP.b; }
+  function toSX(x){ return LP.l+(x-XMIN)/(XMAX-XMIN)*lw(); }
+  function toSY(u){ return H-LP.b-(Math.min(u,UMAX)-UMIN)/(UMAX-UMIN)*lh(); }
+
+  function drawLandscape(){
+    const N=260;
+    // Left basin fill
+    ctx.beginPath();
+    for(let i=0;i<=N/2;i++){
+      const x=XMIN+i/(N/2)*(0.06-XMIN);
+      i===0?ctx.moveTo(toSX(x),toSY(U(x))):ctx.lineTo(toSX(x),toSY(U(x)));
+    }
+    ctx.lineTo(toSX(0.06),H-LP.b); ctx.lineTo(toSX(XMIN),H-LP.b); ctx.closePath();
+    ctx.fillStyle='rgba(128,0,0,0.06)'; ctx.fill();
+
+    // Right basin fill
+    ctx.beginPath();
+    for(let i=0;i<=N/2;i++){
+      const x=0.06+i/(N/2)*(XMAX-0.06);
+      i===0?ctx.moveTo(toSX(x),toSY(U(x))):ctx.lineTo(toSX(x),toSY(U(x)));
+    }
+    ctx.lineTo(toSX(XMAX),H-LP.b); ctx.lineTo(toSX(0.06),H-LP.b); ctx.closePath();
+    ctx.fillStyle='rgba(30,80,160,0.06)'; ctx.fill();
+
+    // Curve
+    ctx.beginPath();
+    for(let i=0;i<=N;i++){
+      const x=XMIN+i/N*(XMAX-XMIN);
+      i===0?ctx.moveTo(toSX(x),toSY(U(x))):ctx.lineTo(toSX(x),toSY(U(x)));
+    }
+    ctx.strokeStyle='rgba(128,0,0,0.72)'; ctx.lineWidth=2.2; ctx.stroke();
+
+    // Labels
+    ctx.font=`7.5px "DM Mono",monospace`; ctx.textAlign='center';
+    ctx.fillStyle='rgba(128,0,0,0.55)';
+    ctx.fillText('default fate',toSX(-1),toSY(U(-1))-12);
+    ctx.fillStyle='rgba(30,80,160,0.55)';
+    ctx.fillText('noise-driven fate',toSX(1),toSY(U(1))-12);
+    ctx.fillStyle='rgba(128,0,0,0.28)';
+    ctx.fillText('barrier',toSX(0.06),toSY(U(0.06))-7);
+    ctx.fillStyle='rgba(128,0,0,0.25)';
+    ctx.textAlign='center';
+    ctx.fillText('gene expression',LP.l+lw()/2,H-4);
+  }
+
+  function drawBar(){
+    const bx=W*0.60+10, bw=W-bx-12;
+    const by=LP.t+8, bh=H-LP.t-LP.b-18;
+
+    ctx.font=`7.5px "DM Mono",monospace`; ctx.textAlign='center';
+    ctx.fillStyle='rgba(128,0,0,0.38)';
+    ctx.fillText('committed fates',bx+bw/2,by-3);
+
+    const total=totalLeft+totalRight;
+    if(total===0){
+      ctx.fillStyle='rgba(128,0,0,0.08)';
+      ctx.fillRect(bx,by,bw,bh);
+      ctx.fillStyle='rgba(128,0,0,0.25)';
+      ctx.fillText('release cells',bx+bw/2,by+bh/2+4);
+      return;
+    }
+
+    const lf=totalLeft/total, rf=totalRight/total;
+    const lh_=lf*bh, rh_=rf*bh;
+    const barW=(bw-6)/2;
+
+    // Left bar
+    ctx.fillStyle='rgba(128,0,0,0.72)';
+    ctx.beginPath(); ctx.roundRect(bx, by+bh-lh_, barW, lh_, 3); ctx.fill();
+    if(lf>0.05){
+      ctx.fillStyle='rgba(128,0,0,0.55)'; ctx.textAlign='center';
+      ctx.fillText(`${Math.round(lf*100)}%`,bx+barW/2,by+bh-lh_-4);
+    }
+    ctx.fillStyle='rgba(128,0,0,0.38)';
+    ctx.fillText('default',bx+barW/2,H-LP.b-2);
+
+    // Right bar
+    ctx.fillStyle='rgba(30,80,160,0.72)';
+    ctx.beginPath(); ctx.roundRect(bx+barW+6, by+bh-rh_, barW, rh_, 3); ctx.fill();
+    if(rf>0.02){
+      ctx.fillStyle='rgba(30,80,160,0.55)'; ctx.textAlign='center';
+      ctx.fillText(`${Math.round(rf*100)}%`,bx+barW+6+barW/2,by+bh-rh_-4);
+    }
+    ctx.fillStyle='rgba(30,80,160,0.38)';
+    ctx.fillText('noise',bx+barW+6+barW/2,H-LP.b-2);
+
+    ctx.fillStyle='rgba(128,0,0,0.22)'; ctx.textAlign='center';
+    ctx.fillText(`n=${total}`,bx+bw/2,H-LP.b+10);
+  }
+
+  function drawCells(){
+    for(const c of activeCells){
+      const sx=toSX(c.x), sy=toSY(U(c.x));
+      // Dot sits ON the curve
+      ctx.beginPath(); ctx.arc(sx, sy-7, 6, 0, Math.PI*2);
+      ctx.fillStyle=c.committed==='right'?'rgba(30,80,160,0.88)':
+                   c.committed==='left' ?'rgba(128,0,0,0.88)':'rgba(160,120,60,0.85)';
+      ctx.fill();
+      ctx.strokeStyle='rgba(255,255,255,0.55)'; ctx.lineWidth=1.3; ctx.stroke();
+    }
+  }
+
+  function redraw(){
+    ctx.clearRect(0,0,W,H);
+    ctx.fillStyle='#fff9f0'; ctx.fillRect(0,0,W,H);
+    drawLandscape();
+    drawBar();
+    drawCells();
+  }
+
+  // Simulate one cell's trajectory (pre-computed, first-passage committed)
+  function simCell(D){
+    const DT=0.018;
+    const xs=[]; // sampled positions for animation
+    let x=(Math.random()-0.5)*0.12; // near barrier
+    xs.push(x);
+    let committed=null;
+    const MAX_STEPS=3000;
+    for(let s=0;s<MAX_STEPS;s++){
+      const u1=Math.max(Math.random(),1e-10);
+      const n=Math.sqrt(-2*Math.log(u1))*Math.cos(2*Math.PI*Math.random());
+      x=Math.max(-1.63,Math.min(1.63, x-dU(x)*DT+Math.sqrt(2*D*DT)*n));
+      // Store every 4th step for animation (reduce data, still smooth)
+      if(s%4===0) xs.push(x);
+      if(!committed){
+        if(x < -0.68){ committed='left'; break; }
+        if(x >  0.68){ committed='right'; break; }
+      }
+    }
+    if(!committed) committed = x<0?'left':'right';
+    return {xs, committed};
+  }
+
+  function releaseCells(){
+    if(animId) cancelAnimationFrame(animId);
+    activeCells=[];
+
+    // Pre-compute 12 cells
+    const cells=[];
+    for(let i=0;i<12;i++) cells.push(simCell(noise));
+
+    // Count committed fates immediately
+    for(const c of cells){
+      if(c.committed==='left') totalLeft++;
+      else totalRight++;
+    }
+
+    // Set up animation objects
+    // Stagger start times so cells don't all move at once
+    const animCells=cells.map((c,i)=>({
+      xs: c.xs,
+      committed: c.committed,
+      step: 0,
+      delay: i*3,  // stagger by 3 frames
+      x: c.xs[0],
+      done: false
+    }));
+    activeCells=animCells;
+
+    let frame=0;
+    function tick(){
+      let anyMoving=false;
+      for(const c of animCells){
+        if(c.done) continue;
+        if(frame < c.delay){ anyMoving=true; continue; }
+        const s=frame-c.delay;
+        if(s < c.xs.length){
+          c.x=c.xs[s];
+          anyMoving=true;
+        } else {
+          c.x=c.xs[c.xs.length-1];
+          c.done=true;
+        }
+      }
+      redraw();
+      if(anyMoving) animId=requestAnimationFrame(tick);
+      else animId=null;
+      frame++;
+    }
+    animId=requestAnimationFrame(tick);
+  }
+
+  document.getElementById('sNnoise').addEventListener('input',e=>{
+    noise=+e.target.value;
+    totalLeft=0; totalRight=0;
+    if(animId){cancelAnimationFrame(animId);animId=null;}
+    activeCells=[];
+    redraw();
+  });
+  document.getElementById('sNrun').addEventListener('click', releaseCells);
+  document.getElementById('sNclear').addEventListener('click',()=>{
+    totalLeft=0; totalRight=0;
+    if(animId){cancelAnimationFrame(animId);animId=null;}
+    activeCells=[];
+    redraw();
+  });
+
+  window.addEventListener('resize',()=>{
+    if(animId){cancelAnimationFrame(animId);animId=null;}
+    setup();
+  });
+  setup();
+})();
+</script>
+
+
+<hr>
+<h2>Signaling channels carry less information than you think</h2>
+
+<p>
+A cell making a fate decision needs information from its environment. It receives that information through signaling pathways — receptor activation, kinase cascades, transcription factor translocation. The question information theory asks is: how much information can these pathways actually carry?
+</p>
+<p>
+The answer is surprising. Cheong, Levchenko, and colleagues (Science, 2011) measured the information capacity of the TNF-to-NF-κB pathway — one of the most studied signaling systems in mammalian biology, involved in inflammation, immunity, and cancer — and found that it transmits approximately 0.92 bits per cell per time point. Almost exactly one bit. A cell receiving TNF signaling through this pathway can barely distinguish "signal present" from "signal absent." It cannot reliably discriminate between two different signal strengths. The mutual information between the input concentration and the output NF-κB level, computed from the full distribution across thousands of cells, saturates at less than one bit because cell-to-cell variation in signaling components (extrinsic noise) overwhelms the input signal.
+</p>
+<p>
+Shannon's mutual information I(X;Y) = H(X) + H(Y) − H(X,Y) measures how much knowing the input reduces uncertainty about the output. When this approaches zero, the output tells you almost nothing about the input. When it equals H(X), the channel is noiseless. For the NF-κB pathway, it is closer to the former.
+</p>
+<p>
+This result seems to create a paradox. How does a cell make reliable fate decisions if its signaling pathways can barely transmit one bit? The answer, which Selimkhanov and colleagues (Science, 2014) demonstrated, is temporal coding. A single static measurement of NF-κB level at one time point carries less than one bit. But NF-κB oscillates — roughly 90-minute period, constant across stimulation intensities (Nelson et al., Science, 2004) — and measuring the full time trace carries substantially more information because the dynamics encode information the amplitude does not. The signaling code is written in time, not in amplitude. A system that reads only one frame reads noise.
+</p>
+
+<p>
+But temporal coding only partially resolves the paradox. The deeper answer is that individual pathways are not the unit of biological computation — networks are. The Drosophila gap gene network is the clearest demonstration. The Bicoid morphogen gradient along the anterior-posterior axis is noisy: Gregor and colleagues (Cell, 2007) measured that Bicoid concentration varies roughly 10% between embryos at equivalent positions. Yet the Hunchback boundary — the position at which Hunchback expression switches from high to low — varies less than 1% of embryo length across embryos. A tenfold reduction in positional error, achieved by the network. How? The four gap genes — Hunchback, Krüppel, Giant, Knirps — cross-repress each other and self-activate, effectively computing a spatial derivative of the Bicoid gradient rather than simply reading its amplitude. Dubuis, Tkačik, Wieschaus, Gregor, and Bialek (PNAS, 2013) showed that four gap genes together encode approximately 4.5 bits of positional information — nearly enough to uniquely identify each of the roughly 50 nuclei per row along the axis, distributed nearly uniformly, which is consistent with an optimization principle operating at the level of the network architecture.
+</p>
+<p>
+This is the key shift. A signaling pathway is a noisy channel. A gene regulatory network is a computation — a transfer function that maps an input trajectory to an output trajectory. The gap gene network does not passively transmit Bicoid concentration. It filters it, sharpens it, and encodes it in a form suitable for downstream fate decisions. That computation is the biological information processing unit, and it only exists as a relationship between variables over time: the network's output at one moment depends on the history of its inputs, the states of its neighbors, and its own past states. You cannot reconstruct a transfer function from a single output measurement. Mathematically, this is identical to the reason you cannot identify a differential equation from one data point. The implication, which the next post in this series develops directly, is that understanding what a regulatory network is computing requires trajectory data — what signals the cell accumulated, what states it passed through — not a snapshot of where it ended up.
+</p>
+
+<img class="post-img" src="https://images.unsplash.com/photo-1576086213369-97a306d36557?w=900&q=80&auto=format&fit=crop" alt="Abstract waves suggesting signal oscillation and frequency encoding" loading="lazy">
+<p class="img-caption">NF-κB oscillates at a roughly 90-minute period regardless of stimulus intensity. Frequency modulation, not amplitude, is the primary information-carrying mode. A single snapshot reads less than one bit.</p>
+
+<!-- DEMO: Information channel -->
+<div class="demo">
+  <div class="demo-head">
+    <span class="demo-head-label">interactive</span>
+    <span class="demo-head-title">Signaling channel — how much information does a pathway carry?</span>
+  </div>
+  <div class="demo-canvas-wrap"><canvas id="c5"></canvas></div>
+  <div class="demo-controls">
+    <label>signal separation: <input type="range" id="s5sig" min="0.1" max="3" step="0.05" value="1.2"></label>
+    <label>channel noise: <input type="range" id="s5noise" min="0.1" max="3" step="0.05" value="1.0"></label>
+  </div>
+  <div class="demo-caption">Left: two input states (e.g. TNF absent / present). Right: distributions of the cellular output (NF-κB level) after passing through the noisy signaling channel. When the distributions overlap heavily, the output is ambiguous — the cell cannot reliably infer which input it received. The estimated bits transmitted updates in real time. The NF-κB pathway sits at ~0.92 bits — the noise slider shows why.</div>
+</div>
+<script>
+(function(){
+  const canvas = document.getElementById('c5');
+  let sig=1.2, noise=1.0;
+  let W, H, ctx, dpr;
+
+  function setup(){
+    const cssW = Math.min(640, canvas.parentElement.clientWidth || 640);
+    const cssH = 200;
+    dpr = window.devicePixelRatio || 1;
+    canvas.width = cssW * dpr;
+    canvas.height = cssH * dpr;
+    canvas.style.width = cssW + 'px';
+    canvas.style.height = cssH + 'px';
+    ctx = canvas.getContext('2d');
+    ctx.scale(dpr, dpr);
+    W = cssW; H = cssH;
+    draw();
+  }
+
+  function gauss(x, mu, s){ return Math.exp(-0.5*(x-mu)*(x-mu)/(s*s)) / (s*Math.sqrt(2*Math.PI)); }
+
+  function estimateMI(separation, sigma){
+    const N=300, xmin=-6, xmax=6+separation;
+    let H_out=0, H_cond=0;
+    for(let i=0;i<N;i++){
+      const x=xmin+i/N*(xmax-xmin), dx=(xmax-xmin)/N;
+      const p0=gauss(x,0,sigma), p1=gauss(x,separation,sigma);
+      const pm=0.5*p0+0.5*p1;
+      if(pm>1e-9) H_out -= pm*Math.log2(pm)*dx;
+      if(p0>1e-9) H_cond -= 0.5*p0*Math.log2(p0)*dx;
+      if(p1>1e-9) H_cond -= 0.5*p1*Math.log2(p1)*dx;
+    }
+    return Math.max(0, Math.min(1, H_out - H_cond));
+  }
+
+  function draw(){
+    ctx.clearRect(0,0,W,H);
+    ctx.fillStyle='#fff9f0'; ctx.fillRect(0,0,W,H);
+    const half = W/2 - 6;
+
+    // Divider
+    ctx.beginPath(); ctx.moveTo(half+6, 16); ctx.lineTo(half+6, H-12);
+    ctx.strokeStyle='rgba(128,0,0,0.12)'; ctx.lineWidth=1; ctx.stroke();
+
+    const xmin=-4.5, xmax=4.5+sig;
+    const ymax = 0.9/(0.3*Math.sqrt(2*Math.PI));
+
+    function plotPanel(xOff, panelW, mus, sigmas, colors, title){
+      const fn = (x,m,s) => gauss(x,m,s);
+      ctx.font=`8px "DM Mono",monospace`; ctx.fillStyle='rgba(128,0,0,0.4)';
+      ctx.textAlign='center'; ctx.fillText(title, xOff+panelW/2, 13);
+      // Axis
+      const ay = H-18;
+      ctx.beginPath(); ctx.moveTo(xOff+14, ay); ctx.lineTo(xOff+panelW-8, ay);
+      ctx.strokeStyle='rgba(128,0,0,0.18)'; ctx.lineWidth=1; ctx.stroke();
+
+      const N=200;
+      for(let g=0;g<mus.length;g++){
+        ctx.beginPath();
+        let first=true;
+        for(let i=0;i<=N;i++){
+          const x=xmin+i/N*(xmax-xmin);
+          const y=fn(x,mus[g],sigmas[g]);
+          const px=xOff+14+(x-xmin)/(xmax-xmin)*(panelW-22);
+          const py=ay-(y/ymax)*(H-38);
+          if(first){ctx.moveTo(px,py);first=false;} else ctx.lineTo(px,py);
+        }
+        ctx.strokeStyle=colors[g]; ctx.lineWidth=2; ctx.stroke();
+        // Fill under
+        ctx.lineTo(xOff+14+(xmax-xmin)/(xmax-xmin)*(panelW-22)+0, ay);
+        ctx.lineTo(xOff+14, ay); ctx.closePath();
+        ctx.fillStyle=colors[g].replace('0.85','0.08'); ctx.fill();
+      }
+    }
+
+    // Input panel: tight gaussians at 0 and sig
+    plotPanel(0, half, [0, sig], [0.3, 0.3],
+      ['rgba(128,0,0,0.85)','rgba(30,80,160,0.85)'], 'input distributions');
+    // Output panel: same means but broadened by noise
+    plotPanel(half+12, half-12, [0, sig], [noise, noise],
+      ['rgba(128,0,0,0.85)','rgba(30,80,160,0.85)'], 'output after channel noise');
+
+    // MI estimate
+    const mi = estimateMI(sig, noise);
+    ctx.font=`bold 10px "DM Mono",monospace`;
+    ctx.textAlign='center';
+    ctx.fillStyle = mi>0.7?'rgba(0,110,0,0.75)':mi>0.3?'rgba(140,70,0,0.75)':'rgba(160,0,0,0.75)';
+    ctx.fillText(`${mi.toFixed(2)} bits transmitted  (NF-κB: ~0.92 bits)`, W/2, H-2);
+  }
+
+  document.getElementById('s5sig').addEventListener('input', e=>{sig=+e.target.value; draw();});
+  document.getElementById('s5noise').addEventListener('input', e=>{noise=+e.target.value; draw();});
+  window.addEventListener('resize', setup);
+  setup();
+})();
+</script>
+
+<p>
+The implications for how we study signaling are significant. If a pathway carries less than one bit at any single moment, then single-cell snapshots of pathway activation state — the standard readout of most cell biology experiments — are extremely noisy measurements of the biological variable you actually care about. The signal is in the dynamics. A cell that pulses NF-κB four times in 30 minutes is receiving different information from a cell that pulses once, even if you cannot tell them apart in a fixed-timepoint assay. This is one of the reasons that the recorder tools described in the next post — systems that write transcriptional history into DNA or protein — are not a marginal improvement over standard single-cell sequencing. They are accessing a fundamentally different class of information.
+</p>
+
+<hr>
+<h2>The Waddington landscape is not equilibrium physics</h2>
+
+<p>
+The Waddington landscape is the most widely reproduced image in developmental biology. A ball rolling down branching valleys. Each valley a cell fate. The visual intuition is immediately compelling, and most presentations leave it there — a metaphor for canalization and commitment, made more rigorous by noting that valleys correspond to gene expression attractors and barriers to the energetic cost of reprogramming.
+</p>
+<p>
+The problem with this presentation is that it imports an assumption from equilibrium statistical mechanics that cells violate constantly: the assumption that the system is at detailed balance. In an equilibrium system, the probability of finding the system in any state x is proportional to exp(−U(x)/kT), where U is a potential function. The probability current between any two states is zero at steady state. Paths between states are time-reversible.
+</p>
+<p>
+None of this is true for cells. Living cells continuously consume energy — ATP hydrolysis, proton gradients, GTP-driven signaling cascades. They are driven, dissipative, far-from-equilibrium systems. Jin Wang and colleagues derived the consequence rigorously (PNAS, 2008, and a series of papers through 2024): the steady-state probability distribution of cell states is governed not by a single potential function but by two forces — a gradient force from a quasi-potential U = −ln P_ss, and a rotational probability flux J that circulates through the landscape even at steady state. This curl flux breaks time-reversal symmetry. It means that the optimal path from one cell fate to another does not follow naive gradient descent on the landscape, and does not necessarily pass through the saddle point between basins.
+</p>
+<p>
+Wang's group validated this prediction against actual single-cell transcriptomic data in PNAS (2024): reprogramming paths from fibroblasts to iPSCs deviate from gradient descent in ways that the flux correctly predicts, and the flux determines whether reprogramming succeeds. Stem cells are maintained at higher non-equilibrium dissipation than differentiated cells — pluripotency costs energy not just metabolically but in the thermodynamic sense of maintaining a state that entropy alone would not favor.
+</p>
+<p>
+The practical consequence is that knowing the quasi-potential landscape is not enough to predict how differentiation will proceed or how to optimally drive reprogramming. You also need the flux. And measuring the flux requires observing not where cells are but how they move — trajectory data, not snapshots.
+</p>
+
+<hr>
+<h2>Perfect adaptation: how cells maintain set points despite noise</h2>
+
+<p>
+The last framework is control theory. It is perhaps the most directly translatable to engineering, and it may be the most broadly applicable to developmental biology once the measurement tools catch up to the theory.
+</p>
+<p>
+Bacterial chemotaxis is the canonical demonstration of biological feedback control, and specifically of one of its most powerful variants: integral feedback. When E. coli is exposed to a step increase in attractant concentration, its receptor activity increases initially, then returns exactly to its prestimulus level — regardless of how large the stimulus was. This is perfect adaptation. Barkai and Leibler (Nature, 1997) proved that this precision is structural: it is a property of the network topology, not of parameter tuning. It works even when the rate constants vary by a factor of two or three. Yi, Huang, Simon, and Doyle (PNAS, 2000) identified the mechanism: the methylation enzyme CheR modifies all receptors at a constant rate, while the demethylation enzyme CheB acts only on active receptors. This asymmetry means the methylation state accumulates a running integral of the error signal — the deviation of receptor activity from its set point. At steady state, the integral of the error must be zero. So receptor activity returns exactly to baseline. Structurally. Always.
+</p>
+<p>
+This is literally an integral controller — the I in PID control — implemented in biochemistry. The same principle appears across biology at every scale. Mustafa Khammash's group at ETH Zurich formalized it for synthetic biology (Briat and Gupta, Cell Systems, 2016), designing an "antithetic integral feedback" motif using two molecular species that bind and annihilate each other stoichiometrically, proving it guarantees robust perfect adaptation regardless of intrinsic biochemical noise. Aoki and colleagues realized this experimentally in E. coli (Nature, 2019). Frei and colleagues extended it to mammalian cells (PNAS, 2022) — the first PI controller implemented in human cells, maintaining defined transcription factor expression at set points across perturbations.
+</p>
+<p>
+Ben-Zvi and Barkai (PNAS, 2010) showed that morphogen gradient scaling during organ growth uses the same principle natively. The expander-repressor motif — a slowly diffusing expander mediates scaling of a morphogen gradient to tissue size — implements integral feedback. The gradient adjusts to maintain the correct proportion of the tissue expressing each target gene, regardless of how fast the tissue is growing. Development does not read fixed concentrations. It integrates deviations from a set point and corrects them. The feedback architecture is built in.
+</p>
+<p>
+The reason this matters for tissue engineering is specific. An organoid developing outside the embryo has lost access to the mechanical boundaries, systemic gradients, and tissue-level feedbacks that implement these control laws in vivo. What remains is the cell-autonomous part of the regulatory network — the attractor structure — operating without the error-correction architecture that normally keeps it on track. The next post in this series argues that providing that architecture externally, by monitoring signaling dynamics in real time and adjusting boundary conditions before bifurcation points are crossed incorrectly, is the key engineering problem that sits upstream of every other organoid challenge: vascularization, maturation, innervation. You cannot solve those if you cannot first guide the developmental trajectory to the right attractor basin.
+</p>
+
+<!-- DEMO: Integral control -->
+<div class="demo">
+  <div class="demo-head">
+    <span class="demo-head-label">interactive</span>
+    <span class="demo-head-title">Integral feedback — perfect adaptation in biochemical networks</span>
+  </div>
+  <div class="demo-canvas-wrap"><canvas id="c6"></canvas></div>
+  <div class="demo-controls">
+    <label>set point: <input type="range" id="s6sp" min="0.2" max="1.8" step="0.05" value="1.0"></label>
+    <label>perturbation: <input type="range" id="s6pert" min="0" max="2.0" step="0.1" value="0"></label>
+    <button class="demo-btn" id="s6apply">apply perturbation</button>
+  </div>
+  <div class="demo-caption">The controlled output (dark red) tracks the set point (dashed line) exactly — this is perfect adaptation, the same mechanism in E. coli chemotaxis and morphogen gradient scaling. Move the set point slider to change the target. Apply a perturbation and watch the integral term (blue) drive the system back precisely. The return is exact regardless of perturbation magnitude — that is what makes integral feedback special.</div>
+</div>
+<script>
+(function(){
+  const canvas = document.getElementById('c6');
+  let sp=1.0, pert=0;
+  const HIST=220;
+  let out=[], integ=[], anim=null, pertVal=0, pertRemaining=0;
+  let W, H, ctx, dpr;
+
+  function setup(){
+    const cssW = Math.min(640, canvas.parentElement.clientWidth || 640);
+    const cssH = 200;
+    dpr = window.devicePixelRatio || 1;
+    canvas.width = cssW * dpr;
+    canvas.height = cssH * dpr;
+    canvas.style.width = cssW + 'px';
+    canvas.style.height = cssH + 'px';
+    ctx = canvas.getContext('2d');
+    ctx.scale(dpr, dpr);
+    W = cssW; H = cssH;
+    reset();
+  }
+
+  function reset(){
+    out = Array(HIST).fill(sp);
+    // Steady state: beta*Ki*I = gamma*sp => I_ss = gamma*sp/(beta*Ki)
+    const I_ss = 0.2*sp/(1.0*1.0); // = 0.2*sp
+    integ = Array(HIST).fill(I_ss);
+  }
+
+  function step(){
+    // PI controller on a first-order plant:
+    //   y' = beta*u - gamma*y - pert_degradation
+    //   u  = Kp*e + Ki*I
+    //   I' = e = sp - y
+    //
+    // Parameters tuned so:
+    //   - perturbation causes a smooth, visible dip
+    //   - integral winds up during the dip
+    //   - clear overshoot above setpoint as integral overshoots
+    //   - smooth exponential decay back to setpoint
+    const dt=0.05;
+    const beta=1.0, gamma=0.2, Kp=0.7, Ki=1.0;
+    const cur = out[out.length-1];
+    const ig  = integ[integ.length-1];
+    const err = sp - cur;
+    const newI = ig + err*dt;
+    const u = Kp*err + Ki*newI;  // no clamp — allow negative for pull-down during overshoot
+    const noise_term = (Math.random()-0.5)*0.018;
+    if(pertRemaining > 0){
+      pertRemaining--;
+      if(pertRemaining === 0) pertVal = 0;
+    }
+    // pertVal is a multiplicative extra degradation: gamma_eff = gamma + pertVal
+    const dy = (beta*u - (gamma + pertVal)*cur + noise_term) * dt;
+    out.push(Math.max(0, Math.min(2.5, cur + dy)));
+    integ.push(newI);
+    if(out.length>HIST) out.shift();
+    if(integ.length>HIST) integ.shift();
+  }
+
+  function draw(){
+    ctx.clearRect(0,0,W,H);
+    ctx.fillStyle='#fff9f0'; ctx.fillRect(0,0,W,H);
+    const pad=30, ymax=2.3, ymin=0;
+    const py = v => H-pad-(v-ymin)/(ymax-ymin)*(H-2*pad);
+    const px = i => pad+i/(HIST-1)*(W-2*pad);
+
+    // Set point
+    ctx.beginPath(); ctx.setLineDash([5,4]);
+    ctx.moveTo(pad,py(sp)); ctx.lineTo(W-pad,py(sp));
+    ctx.strokeStyle='rgba(128,0,0,0.35)'; ctx.lineWidth=1; ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.font=`8px "DM Mono",monospace`; ctx.fillStyle='rgba(128,0,0,0.35)';
+    ctx.textAlign='right'; ctx.fillText('set point →', W-pad+1, py(sp)-4);
+
+    // Integral term — displayed relative to equilibrium value
+    // At steady state I_ss = sp/(beta*Ki) so displayed = sp + (I - I_ss)*factor
+    const beta_=1.0, Ki_=1.0, gamma_=0.2;
+    const I_ss_draw = gamma_*sp/(beta_*Ki_); // = 0.2*sp
+    ctx.beginPath();
+    out.forEach((_,i)=>{
+      const I_dev = integ[i] - I_ss_draw; // deviation from equilibrium
+      const v = Math.max(-0.2, Math.min(2.3, sp + I_dev * 0.55));
+      i===0 ? ctx.moveTo(px(i),py(v)) : ctx.lineTo(px(i),py(v));
+    });
+    ctx.strokeStyle='rgba(30,80,160,0.4)'; ctx.lineWidth=1.2; ctx.stroke();
+
+    // Output
+    ctx.beginPath();
+    out.forEach((v,i)=>{ i===0?ctx.moveTo(px(i),py(v)):ctx.lineTo(px(i),py(v)); });
+    ctx.strokeStyle='rgba(128,0,0,0.88)'; ctx.lineWidth=2; ctx.stroke();
+
+    // Labels
+    ctx.font=`8px "DM Mono",monospace`; ctx.textAlign='left';
+    ctx.fillStyle='rgba(128,0,0,0.65)'; ctx.fillText('receptor activity (output)',pad+4,14);
+    ctx.fillStyle='rgba(30,80,160,0.5)'; ctx.fillText('integral term',pad+4+200,14);
+
+    // Status
+    const cur=out[out.length-1];
+    const adapted=Math.abs(cur-sp)<0.06;
+    ctx.font=`bold 9px "DM Mono",monospace`; ctx.textAlign='right';
+    ctx.fillStyle=adapted?'rgba(0,110,0,0.7)':'rgba(140,60,0,0.7)';
+    ctx.fillText(adapted?'perfectly adapted':'adapting…', W-pad, 14);
+
+    // Y-axis ticks
+    ctx.font=`7px "DM Mono",monospace`; ctx.fillStyle='rgba(128,0,0,0.28)'; ctx.textAlign='right';
+    [0,0.5,1.0,1.5,2.0].forEach(v=>ctx.fillText(v.toFixed(1),pad-4,py(v)+3));
+  }
+
+  function loop(){ step(); draw(); anim=requestAnimationFrame(loop); }
+
+  document.getElementById('s6sp').addEventListener('input',e=>{sp=+e.target.value;});
+  document.getElementById('s6pert').addEventListener('input',e=>{pert=+e.target.value;});
+  document.getElementById('s6apply').addEventListener('click',()=>{
+    pertVal = pert;
+    pertRemaining = 28; // apply for 28 steps — enough for integral to wind up clearly
+  });
+
+  const obs=new IntersectionObserver(ent=>{
+    if(ent[0].isIntersecting){ if(!anim) anim=requestAnimationFrame(loop); }
+    else{ if(anim){cancelAnimationFrame(anim);anim=null;} }
+  },{threshold:0.1});
+  obs.observe(canvas);
+
+  window.addEventListener('resize', setup);
+  setup();
+})();
+</script>
+
+<p>
+Khammash's lab went further and built a real-time external control loop around living cells — the Cyberloop (Nature Communications, 2021). Cells' fluorescence is measured continuously, a computer computes the control input, and light pulses are delivered to optogenetic actuators inside the cell. Lugagne, Blassick, and Dunlop (Nature Communications, 2024) extended this to deep model predictive control using neural networks, imposing arbitrary defined gene expression dynamics on thousands of individual cells simultaneously. This is not metaphor. It is control engineering running on living cells in real time.
+</p>
+<p>
+The implication for organ engineering is direct. Organoids fail not because cells lack the capacity to self-organize — every organoid experiment proves they have it — but because we cannot monitor the developmental process as it unfolds and correct early deviations before they propagate. The biology already implements feedback control natively. What it lacks, when running outside the embryo, is the measurement layer that tells it whether it has reached the right set point. The frameworks described here are ready to specify what measurements matter. The tools to make those measurements are what the next generation of molecular recorders — the subject of the preceding post — is being built to provide.
+</p>
+
+<hr>
+<h2>The same system, all at once</h2>
+
+<p>
+iPSC reprogramming — taking a differentiated skin cell and driving it back to a pluripotent state with four transcription factors — has become the proving ground for every framework described here, because it is the clearest example of a cellular state transition that we can initiate on demand and watch in real time.
+</p>
+<p>
+The attractor framework says: fibroblast and iPSC are stable attractors separated by a high barrier. Reprogramming requires crossing that barrier. The Yamanaka factors reshape the landscape by modifying the regulatory interactions, lowering the barrier. Jost, Sáez, and colleagues (2019) showed that reprogramming follows a single reaction coordinate consistent with barrier-crossing dynamics. The stochastic framework explains the sub-1% efficiency: even with the barrier lowered, crossing requires a sufficient accumulation of stochastic kicks in the right direction. Most cells fluctuate indefinitely near the fibroblast attractor and never escape. The Kramers escape rate — exp(−ΔU/D) — depends exponentially on barrier height divided by noise. Information theory says that pluripotent cells have maximal signaling entropy (Teschendorff and Enver, 2017) and that reprogramming must open up a committed, low-entropy transcriptional state into a promiscuous, high-entropy one. The non-equilibrium landscape says that optimal paths are not gradient descent, they curve with the flux — Wang's group validated this against reprogramming data. And control theory, via Ronquist and colleagues (PNAS, 2017), solved the reprogramming problem as an optimal control problem: what combination and duration of transcription factor inputs steers the cell state from fibroblast to iPSC most efficiently?
+</p>
+<p>
+The frameworks are not competing. They are different lenses on the same process, each making predictions the others cannot. Dynamical systems without stochasticity misses the noise-driven symmetry-breaking at bifurcations. Stochasticity without information theory cannot quantify how much the decision actually depended on the input. Information theory without control theory cannot explain why some perturbations are absorbed while others derail development permanently. Control theory without the attractor landscape has no target to steer toward.
+</p>
+<p>
+What all six frameworks share is this: they are each describing some aspect of a biological system computing a transfer function across time. Not a lookup table — "if signal X, produce output Y" — but a dynamical computation in which the output depends on the history of inputs, the topology of the regulatory network, the noise level relative to the barrier structure, and the feedback architecture maintaining the set point. That computation is what development is. It is also what we cannot see from snapshots. Sequencing gives you the output state of the computation at one moment. Live imaging gives you one or two labeled variables in real time, but not the full state, not at scale, not with molecular identity. What you need to reconstruct the transfer function is trajectory data: what the cell accumulated, what states it passed through, what its neighbors were doing, all the way from signal to commitment. That is what the molecular recording tools in the preceding post are being designed to capture, and it is what the next post in this series argues must be measured before organ engineering can move from art to engineering.
+</p>
+</article>
+
+<nav class="post-nav">
+  <a href="recorders.html" class="nav-link prev">&#8592; The Recorder Zoo</a>
+  <a href="../index.html" class="nav-home">All writing</a>
+  <a href="constraints.html" class="nav-link next">Constraints, Not Components &#8594;</a>
+</nav>
+<script>
+  const bar=document.getElementById('progress-bar');
+  window.addEventListener('scroll',()=>{
+    const d=document.documentElement;
+    bar.style.width=(d.scrollHeight-window.innerHeight>0?(d.scrollTop/(d.scrollHeight-window.innerHeight))*100:0)+'%';
+  },{passive:true});
+</script>
+</body>
+</html>

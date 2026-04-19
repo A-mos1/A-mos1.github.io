@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Chreode — Ahmed Moselhi</title>
+  <meta name="description" content="A white paper on reading and enforcing the topology of biological constraint to grow organs." />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;1,400&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; }
+    :root {
+      --bg:        #FFF5E6;
+      --ink:       #800000;
+      --ink-faint: #a05050;
+      --rule:      rgba(128,0,0,0.15);
+      --code-bg:   rgba(128,0,0,0.06);
+      --max-w:     680px;
+    }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: 'Lora', Georgia, serif;
+      font-size: 1.05rem;
+      line-height: 1.75;
+    }
+    .topbar {
+      position: sticky; top: 0; z-index: 10;
+      background: var(--bg); border-bottom: 1px solid var(--rule);
+      padding: 0.6rem 1.5rem;
+      display: flex; justify-content: space-between; align-items: center;
+      font-size: 0.82rem; font-family: 'DM Mono', monospace;
+    }
+    .topbar a { color: var(--ink-faint); text-decoration: none; }
+    .topbar a:hover { color: var(--ink); text-decoration: underline; }
+    .topbar .site-name { font-weight: 500; color: var(--ink); }
+    article { max-width: var(--max-w); margin: 0 auto; padding: 3.5rem 1.5rem 6rem; }
+    h1 { font-size: clamp(2rem, 6vw, 3.2rem); font-weight: 600; line-height: 1.1; margin: 0 0 0.3rem; letter-spacing: -0.03em; }
+    .subtitle { font-size: 1.05rem; color: var(--ink-faint); font-style: italic; margin: 0 0 0.5rem; }
+    .post-meta { font-family: 'DM Mono', monospace; font-size: 0.78rem; color: var(--ink-faint); margin-bottom: 2.8rem; letter-spacing: 0.03em; }
+    h2 { font-size: 1.35rem; font-weight: 600; margin: 2.8rem 0 0.6rem; letter-spacing: -0.01em; }
+    h3 { font-size: 1.05rem; font-weight: 600; margin: 2rem 0 0.4rem; font-style: italic; }
+    p { margin: 0 0 1.4rem; }
+    hr { border: none; border-top: 1px solid var(--rule); margin: 2.5rem 0; }
+    strong { font-weight: 600; }
+    em { font-style: italic; }
+    a { color: var(--ink); text-decoration: underline; text-decoration-color: var(--rule); text-underline-offset: 3px; }
+    a:hover { text-decoration-color: var(--ink); }
+
+    .confidential-tag {
+      display: inline-block;
+      font-family: 'DM Mono', monospace;
+      font-size: 0.72rem;
+      letter-spacing: 0.12em;
+      color: var(--ink-faint);
+      border: 1px solid var(--rule);
+      padding: 0.2rem 0.6rem;
+      border-radius: 2px;
+      margin-bottom: 2.5rem;
+    }
+
+    /* Platform diagram */
+    .platform-fig { margin: 2.5rem 0; }
+    .platform-fig figcaption { font-family: 'DM Mono', monospace; font-size: 0.75rem; color: var(--ink-faint); margin-top: 0.7rem; letter-spacing: 0.02em; }
+
+    /* Clinical path table */
+    .path-table { margin: 2rem 0; border-collapse: collapse; width: 100%; font-family: 'DM Mono', monospace; font-size: 0.8rem; }
+    .path-table th { text-align: left; color: var(--ink-faint); border-bottom: 1px solid var(--rule); padding: 0.5rem 0.8rem; font-weight: 500; }
+    .path-table td { padding: 0.55rem 0.8rem; border-bottom: 1px solid var(--rule); color: var(--ink); vertical-align: top; }
+    .path-table tr:last-child td { border-bottom: none; }
+    .path-table .td-target { color: var(--ink); font-weight: 500; }
+    .path-table .td-horizon { color: var(--ink-faint); white-space: nowrap; }
+
+    #progress-bar { position: fixed; top: 0; left: 0; height: 2px; background: var(--ink); width: 0%; z-index: 100; transition: width 0.1s linear; }
+    .post-nav {
+      max-width: var(--max-w); margin: 0 auto; padding: 2rem 1.5rem 4rem;
+      display: grid; grid-template-columns: 1fr auto 1fr; gap: 1rem; align-items: center;
+      border-top: 1px solid var(--rule);
+      font-family: 'DM Mono', monospace; font-size: 0.8rem;
+    }
+    .post-nav .nav-link { color: var(--ink-faint); text-decoration: none; }
+    .post-nav .nav-link:hover { color: var(--ink); }
+    .post-nav .nav-link.next { text-align: right; }
+    .post-nav .nav-home { text-align: center; color: var(--ink-faint); text-decoration: none; }
+    .post-nav .nav-home:hover { color: var(--ink); }
+    .footer-sig { font-style: italic; color: var(--ink-faint); font-size: 0.95rem; margin-top: 2.5rem; }
+
+    @media (max-width: 600px) {
+      .post-nav { grid-template-columns: 1fr; text-align: center; }
+    }
+  </style>
+</head>
+<body>
+
+<div id="progress-bar"></div>
+
+<nav class="topbar">
+  <span class="site-name"><a href="../index.html">Ahmed Moselhi</a></span>
+  <a href="../index.html">&#8592; Writing</a>
+</nav>
+
+<article>
+<h1>Chreode</h1>
+<p class="subtitle">Reading and Enforcing the Topology of Biological Constraint to Grow Organs</p>
+<p class="post-meta">November 2025 &middot; white paper</p>
+<span class="confidential-tag">DRAFT — CONFIDENTIAL</span>
+
+<h3>The name</h3>
+<p>
+In 1957, Conrad Waddington coined the word <em>chreode</em> from the Greek for "necessary path." It described the canalized developmental trajectories that make organ formation reliable despite molecular noise — the grooves in the landscape that cells follow, not because they are forced there step by step, but because the regulatory architecture of the network makes those paths attractors. A chreode is not a sequence of instructions. It is a topology of constraint that makes certain outcomes inevitable from a wide range of starting positions.
+</p>
+<p>
+The word has stayed in the developmental biology literature as a concept without a company. We intend to change that.
+</p>
+<hr>
+
+<h3>The problem, stated plainly</h3>
+<p>
+The organ transplant waiting list in the United States currently holds over 100,000 people. Roughly 20 die each day waiting. The field of organ bioengineering has spent thirty years and billions of dollars attempting to address this. What it has produced, honestly assessed, is functional skin grafts, avascular cartilage implants, and an expanding catalogue of reasons why everything harder has not worked.
+</p>
+<p>
+The standard framing of why organ engineering fails focuses on the parts list: we cannot print capillaries at the right resolution, iPSC-derived cells remain fetal, innervation does not occur spontaneously, manufacturing at scale is unsolved. These are real problems. But they share a common upstream cause that is almost never named as such: <strong>we do not understand, and therefore cannot control, the dynamic process by which cells self-organize into functional tissues.</strong>
+</p>
+<p>
+Every embryo solves this problem. A single fertilized cell reliably produces a kidney with one million nephrons, each with over twenty distinct cell types, precisely arranged for countercurrent multiplication. It does so without a blueprint. It does so using the same noisy molecular machinery that makes individual gene expression vary by orders of magnitude between sister cells. The solution is not precision at the molecular level. It is the topology of the regulatory network — the constraint architecture that makes the right trajectories stable attractors regardless of molecular fluctuations along the way.
+</p>
+<p>
+We cannot yet engineer organs because we cannot yet read that topology, let alone enforce it. Chreode exists to do both.
+</p>
+<hr>
+
+<h3>The scientific foundation</h3>
+<p>
+The intellectual basis for what Chreode is building has been assembling across fields for seventy years without converging on a practical platform. The key results, stated briefly:
+</p>
+<p>
+<strong>Cells navigate attractor landscapes, not programs.</strong> Kauffman established in 1969 that cell types emerge as attractors of gene regulatory network dynamics. Huang and colleagues demonstrated experimentally in 2005 that differentiation trajectories in a 2,773-dimensional gene expression space converge to common attractor states from multiple starting directions, exactly as dynamical systems theory predicts. Cell fate is not executed — it is settled into. This distinction is not semantic. It means that engineering a cell fate requires shaping the landscape, not scripting the path.
+</p>
+<p>
+<strong>The landscape has a topology determined by regulatory architecture.</strong> Barkai and Leibler (Nature, 1997) showed that robust adaptation in biological networks is a property of topology, not parameters. Wang and colleagues (PNAS, 2008 onward) derived the quantitative landscape from first principles, showing that biological dynamics are governed by a quasi-potential U = −ln P_ss and a rotational curl flux that breaks detailed balance. The landscape is not metaphor — it is the negative log probability of finding a cell in each state, shaped by the regulatory network, measurable in principle from trajectory data. The flux means that optimal developmental paths deviate from gradient descent: cells do not simply roll downhill, they circulate through the landscape in preferred directions set by the non-equilibrium driving of the living system.
+</p>
+<p>
+<strong>Noise is functional, not accidental.</strong> Elowitz and colleagues (Science, 2002) demonstrated that transcriptional noise is biologically regulated and decomposable into intrinsic and extrinsic components. A decade of subsequent work established that noise is not a failure of biological precision but a tunable parameter that cells exploit for bet-hedging, symmetry-breaking, and stochastic fate specification. At bifurcation points — the moments where fate is decided — noise structure determines which cells cross which basin boundaries. You cannot understand or control development without measuring noise, not just averages.
+</p>
+<p>
+<strong>Signaling is encoded in time, not amplitude.</strong> Cheong and colleagues (Science, 2011) measured that the TNF-NF-kB pathway transmits roughly 0.92 bits of information per cell per static timepoint. Including dynamic features — oscillation frequency, pulse patterns, temporal sequences — increases the channel capacity substantially. Nelson et al. (Science, 2004) showed NF-kB oscillates with a roughly 90-minute period constant across stimulation intensities. ERK does not simply activate in response to EGF: it pulses at frequencies that encode stimulus strength. The signaling code is written in time. Any measurement tool that reads a single timepoint reads noise.
+</p>
+<p>
+<strong>Snapshots cannot reconstruct trajectories.</strong> Weinreb, Wolock, and Klein (PNAS, 2018) proved formally that for any observed distribution of cell states, multiple distinct dynamics could have generated it. Single-cell RNA sequencing, however high-dimensional, cannot uniquely determine the dynamics from a snapshot. Pseudotime is a topological ordering, not a temporal one. RNA velocity has well-documented failure modes (Bergen et al., Molecular Systems Biology, 2021). The trajectory data needed to reconstruct the landscape and test interventions does not currently exist.
+</p>
+<p>
+<strong>Self-organization fails without monitoring.</strong> The organoid literature establishes beyond doubt that cells possess self-organizing capacity. Sato and Clevers (Nature, 2009) showed that a single intestinal stem cell rebuilds complete crypt-villus architecture. The persistent failures of organoid engineering — batch variability, maturation arrest, missing cell types — are not failures of cellular capacity. They are failures of our ability to monitor and guide the developmental process as it unfolds. The critical early decisions that propagate into divergent outcomes happen in the first hours of organoid development. By the time morphological deviation is visible, it cannot be corrected.
+</p>
+<hr>
+
+<h3>What Chreode builds</h3>
+<p>
+Chreode is building a platform with three integrated layers: measure, map, enforce.
+</p>
+
+<figure class="platform-fig">
+  <svg viewBox="0 0 600 290" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:600px;font-family:'DM Mono',monospace;">
+    <!-- Layer 1: Measure -->
+    <rect x="20" y="20" width="560" height="72" rx="6" fill="rgba(128,0,0,0.05)" stroke="#800000" stroke-width="1.5"/>
+    <text x="38" y="42" font-size="11" fill="#800000" font-weight="500">MEASURE — cellular panopticon</text>
+
+    <!-- Timescale blocks within Measure -->
+    <rect x="36" y="50" width="110" height="30" rx="3" fill="rgba(128,0,0,0.08)" stroke="#a05050" stroke-width="1"/>
+    <text x="91" y="61" text-anchor="middle" font-size="8.5" fill="#800000">seconds–minutes</text>
+    <text x="91" y="73" text-anchor="middle" font-size="7.5" fill="#a05050">KTR biosensors · Ca²⁺</text>
+
+    <rect x="158" y="50" width="110" height="30" rx="3" fill="rgba(128,0,0,0.08)" stroke="#a05050" stroke-width="1"/>
+    <text x="213" y="61" text-anchor="middle" font-size="8.5" fill="#800000">minutes–hours</text>
+    <text x="213" y="73" text-anchor="middle" font-size="7.5" fill="#a05050">scNT-seq · CytoTape · GEMINI</text>
+
+    <rect x="280" y="50" width="110" height="30" rx="3" fill="rgba(128,0,0,0.08)" stroke="#a05050" stroke-width="1"/>
+    <text x="335" y="61" text-anchor="middle" font-size="8.5" fill="#800000">hours–weeks</text>
+    <text x="335" y="73" text-anchor="middle" font-size="7.5" fill="#a05050">ENGRAM · BASELINE · VLP</text>
+
+    <rect x="402" y="50" width="160" height="30" rx="3" fill="rgba(128,0,0,0.08)" stroke="#a05050" stroke-width="1"/>
+    <text x="482" y="61" text-anchor="middle" font-size="8.5" fill="#800000">throughout</text>
+    <text x="482" y="73" text-anchor="middle" font-size="7.5" fill="#a05050">MERFISH spatial · PEtracer lineage</text>
+
+    <!-- Arrow down -->
+    <line x1="300" y1="92" x2="300" y2="116" stroke="#800000" stroke-width="1.5"/>
+    <polygon points="294,112 306,112 300,120" fill="#800000"/>
+
+    <!-- Layer 2: Map -->
+    <rect x="20" y="120" width="560" height="68" rx="6" fill="rgba(128,0,0,0.04)" stroke="#a05050" stroke-width="1.5"/>
+    <text x="38" y="141" font-size="11" fill="#800000" font-weight="500">MAP — empirical landscape reconstruction</text>
+    <text x="38" y="158" font-size="8.5" fill="#a05050">path-integral methods (Cislo &amp; Siggia, 2025) · neural SDEs (scDiffEq, 2025) · Schrödinger bridge methods</text>
+    <text x="38" y="173" font-size="8.5" fill="#a05050">output: bifurcation points · noise structure · flux · basin boundaries — all from trajectory data</text>
+
+    <!-- Arrow down -->
+    <line x1="300" y1="188" x2="300" y2="212" stroke="#800000" stroke-width="1.5"/>
+    <polygon points="294,208 306,208 300,216" fill="#800000"/>
+
+    <!-- Layer 3: Enforce -->
+    <rect x="20" y="216" width="560" height="60" rx="6" fill="rgba(128,0,0,0.04)" stroke="#a05050" stroke-width="1.5"/>
+    <text x="38" y="237" font-size="11" fill="#800000" font-weight="500">ENFORCE — feedback control of self-organization</text>
+    <text x="38" y="254" font-size="8.5" fill="#a05050">real-time biosensor readout → predictive controller (cyberloop, Khammash lab) → optogenetics + growth factor delivery</text>
+    <text x="38" y="269" font-size="8.5" fill="#a05050">objective: maintain organoid within the productive chreode — not scripting each step, constraining the space</text>
+
+    <!-- Feedback loop arrow -->
+    <path d="M 572 248 C 590 248 590 60 572 60" stroke="#800000" stroke-width="1" fill="none" stroke-dasharray="4,3"/>
+    <polygon points="566,56 578,56 572,64" fill="#800000" opacity="0.5"/>
+    <text x="594" y="158" font-size="7.5" fill="#a05050" transform="rotate(90,594,158)">feedback</text>
+  </svg>
+  <figcaption>The three-layer Chreode platform. Each layer produces outputs that feed the next; the closed loop from enforce back to measure is the core architectural difference from conventional organoid culture.</figcaption>
+</figure>
+
+<p>
+<strong>Measure: the cellular panopticon.</strong> The field's measurement gap is specific and quantifiable. A complete developmental trajectory for a single cell contains on the order of 10<sup>6</sup> to 10<sup>8</sup> bits of information spanning seven decades of timescale from ion channel gating to fate commitment. Current molecular recorders store thousands of bits. No single tool spans more than two of those decades at single-cell molecular resolution.
+</p>
+<p>
+Chreode is building the integrated measurement architecture that bridges this gap. At the second-to-minute scale, genetically encoded biosensors — kinase translocation reporters for ERK, JNK, p38, and PKA (Regot et al., Cell, 2014), calcium indicators including jGCaMP8f (Zhang et al., Nature, 2023), and custom FRET sensors for key pathway activities — are combined with optogenetic actuators for causal interrogation. This layer captures the signaling language: pulses, oscillations, and transient responses that carry information in their temporal patterns.
+</p>
+<p>
+At the minute-to-hour scale, metabolic labeling using 4-thiouridine combined with droplet single-cell sequencing (scNT-seq, Qiu et al., Nature Methods, 2020) provides real RNA synthesis and degradation rates per gene per cell type. Protein assembly recorders — CytoTape (Linghu et al., Nature, 2026) for multi-week transcription factor histories at minutes-scale resolution, GEMINI (Yan et al., Nature, 2026) for timestamped transcription factor activity — provide continuous molecular chronicles without sequencing.
+</p>
+<p>
+At the hour-to-week scale, prime editing sequential recorders (ENGRAM, Chen et al., Nature, 2024) record the ordered activity of transcription factors and signaling pathways as symbolic barcodes in DNA. BASELINE (Winter et al., bioRxiv, 2025) provides more than 4,300 bits of lineage capacity spanning an estimated 40 cell divisions. VLP-based non-destructive RNA export (COURIER, Horns et al., Cell, 2023) enables repeated transcriptome sampling from the same living culture without destroying cells.
+</p>
+<p>
+The critical proprietary development is the integration layer: shared spatial and cellular coordinates across all timescales, computational registration of fast biosensor dynamics to slow lineage and transcriptomic readouts in the same cells, and the data infrastructure to handle the resulting information volume. No existing platform does this. Chreode builds it.
+</p>
+<p>
+<strong>Map: empirical landscape reconstruction.</strong> With adequate trajectory data, the Waddington landscape ceases to be a theoretical construct and becomes an empirical object. Chreode applies path-integral methods (Cislo and Siggia, PNAS, 2025), neural stochastic differential equations (scDiffEq, Vinyard et al., Nature Machine Intelligence, 2025), and Schrödinger bridge methods to reconstruct the quasi-potential U and probability flux J from measured single-cell trajectories during organoid development.
+</p>
+<p>
+The output of mapping is specific and actionable: the bifurcation points where fate decisions occur, identified by the actual divergence of individual cell trajectories; the noise structure at each decision point, decomposed into intrinsic and extrinsic components; the signals that govern each bifurcation, identified through causal optogenetic interrogation; and the flux, quantifying how developmental directionality departs from gradient descent on the landscape alone.
+</p>
+<p>
+<strong>Enforce: feedback control of self-organization.</strong> The third layer converts the mapped constraint topology into an engineering capability. The enforcement architecture is built on the cyberloop principle demonstrated by Khammash's group at ETH Zurich (Nature Communications, 2021) and extended to deep model predictive control by Lugagne, Blassick, and Dunlop (Nature Communications, 2024): real-time measurement of cell state feeds a predictive controller that computes optimal interventions and delivers them through optogenetic actuators, growth factor perfusion, and mechanical actuation. The controller's objective is not to specify each molecular event but to maintain developing tissue within the basin of attraction of the desired developmental trajectory, allowing the cells' own self-organizing capacity to produce the outcome.
+</p>
+<hr>
+
+<h3>The path to organs</h3>
+
+<table class="path-table">
+  <thead>
+    <tr>
+      <th>target</th>
+      <th>horizon</th>
+      <th>key bottleneck Chreode addresses</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td class="td-target">Vascularized organoids</td>
+      <td class="td-horizon">proving ground</td>
+      <td>Monitoring vascularization in real time; detecting deviations in endothelial self-assembly before necrotic core forms</td>
+    </tr>
+    <tr>
+      <td class="td-target">Islet constructs (T1D)</td>
+      <td class="td-horizon">first clinical target</td>
+      <td>Beta cell differentiation trajectory control; reproducibility at scale; guiding maturation toward glucose-sensitive phenotype</td>
+    </tr>
+    <tr>
+      <td class="td-target">Cardiac patches (heart failure)</td>
+      <td class="td-horizon">near-term clinical</td>
+      <td>iPSC cardiomyocyte maturation monitoring via CytoTape + SRS metabolic imaging; guiding culture toward adult fatty-acid-oxidation metabolism</td>
+    </tr>
+    <tr>
+      <td class="td-target">Kidney constructs</td>
+      <td class="td-horizon">decade-scale</td>
+      <td>Solving maturation + vascularization + spatial organization sequentially; even 10% function frees patients from dialysis</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>
+Each target is chosen to build on the previous. Islet constructs validate the measurement and control loop in a relatively simple, high-stakes tissue. Cardiac patches extend to a mechanically active, metabolically demanding tissue that requires maturation readouts beyond transcriptomics. Kidney constructs bring all components together at full biological complexity, with a clinical bar low enough (10% function) to be achievable before the full organ architecture problem is solved.
+</p>
+<hr>
+
+<h3>Why now</h3>
+<p>
+Three converging developments make this the right moment.
+</p>
+<p>
+First, the measurement tools have arrived. CytoTape and GEMINI demonstrated weeks-long in vivo recording in 2026. BASELINE demonstrated 4,300-bit lineage capacity in 2025. PEtracer demonstrated spatially resolved lineage tracing. The individual layers of the measurement architecture exist. Integration is the remaining engineering challenge, and it is tractable.
+</p>
+<p>
+Second, the computational frameworks are ready. Neural SDEs, Schrödinger bridge methods, and path-integral landscape reconstruction all exist and have been demonstrated on single-cell data at scale. They are not waiting for algorithmic breakthroughs. They are waiting for trajectory data to train on and validate against. Chreode generates that data.
+</p>
+<p>
+Third, the regulatory environment has shifted. The FDA Modernization Act 2.0 (signed December 2022) eliminated the Depression-era mandate for animal data as the default pathway to human trials. FDA Commissioner Makary announced in April 2025 a roadmap to make animal testing the exception rather than the norm within three to five years. Organ constructs that demonstrate function through rigorous in vitro and ex vivo testing now have a viable regulatory path. Chreode's measurement platform is also its regulatory evidence platform: the same trajectory data that guides development provides the most rigorous available characterization of what a tissue construct is and how it behaves.
+</p>
+<hr>
+
+<h3>What Chreode is not</h3>
+<p>
+Chreode is not a bioprinting company. Fabrication technologies are inputs to the platform, not its core. FRESH printing, SWIFT sacrificial templating, and endothelial self-assembly are tools Chreode uses and iterates on, but the competitive moat is in the measurement and control layer, not the hardware.
+</p>
+<p>
+Chreode is not a foundation model company. Models trained on static single-cell snapshots cannot learn the causal regulatory logic that governs developmental trajectories, because that logic is encoded in time and the snapshots do not contain it. A 2025 sparse autoencoder analysis of scGPT and Geneformer found that only 3 of 48 tested transcription factors showed regulatory-target-specific feature responses. The data generates the model. Chreode generates the right data.
+</p>
+<p>
+Chreode is not a CRO. The platform will be used to generate proprietary developmental data, develop proprietary tissue constructs, and ultimately produce clinical products. Licensing the measurement and control platform to organ engineering partners is a revenue pathway, not the primary ambition.
+</p>
+<hr>
+
+<h3>The central bet</h3>
+<p>
+The central bet Chreode is making is this: the reason we cannot build organs is not that we lack fabrication tools, or cell sources, or regulatory pathways. It is that we have been attempting to engineer a dynamical process by specifying endpoints rather than reading and enforcing the topology of constraint that makes the process work in vivo.
+</p>
+<p>
+Embryonic development is not a manufacturing process. It is a controlled dynamical system, canalized by the regulatory architecture of the genome into trajectories that reliably reach functional endpoints despite molecular noise. The genome did not evolve to specify every cell's state. It evolved to shape a landscape of constraint such that self-organization is reliable.
+</p>
+<p>
+Chreode reads that landscape from trajectory data. It maps the bifurcation points and the noise structure and the signals that govern them. And it enforces the topology — not by scripting each molecular event, but by maintaining the boundary conditions that keep developing tissue within the productive chreode, allowing the cells' own capacity to do what it has always known how to do.
+</p>
+<p>
+The cells know how to build organs. Every embryo proves this. Chreode's job is to watch them do it, understand the constraints they are navigating, and provide those constraints on demand — outside the body, at therapeutic scale, for the 100,000 people waiting.
+</p>
+
+<p class="footer-sig">Chreode — Basel / Cambridge<br>For inquiries: [contact]</p>
+</article>
+
+<nav class="post-nav">
+  <a href="constraints.html" class="nav-link prev">&#8592; Constraints, Not Components</a>
+  <a href="../index.html" class="nav-home">All writing</a>
+  <span></span>
+</nav>
+
+<script>
+  const bar = document.getElementById('progress-bar');
+  window.addEventListener('scroll', () => {
+    const doc = document.documentElement;
+    const scrolled = doc.scrollTop;
+    const total = doc.scrollHeight - window.innerHeight;
+    bar.style.width = (total > 0 ? (scrolled / total) * 100 : 0) + '%';
+  }, { passive: true });
+</script>
+
+</body>
+</html>
