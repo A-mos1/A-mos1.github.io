@@ -70,6 +70,12 @@
 <hr>
 <h2>The landscape is real</h2>
 
+<img style="width:100%;border-radius:4px;margin:2rem 0 0.4rem;display:block;filter:sepia(0.12) brightness(0.97);"
+     src="zeb.gif"
+     alt="Zebrafish embryo early development"
+     loading="lazy">
+<p style="font-family:'DM Mono',monospace;font-size:0.73rem;color:var(--ink-faint);margin:0 0 1.8rem;letter-spacing:0.02em;">A developing zebrafish embryo. Credit: Wagner Lab UCSF.</p>
+
 <p>Waddington drew his epigenetic landscape in 1957. You have probably seen the picture: a ball rolling down a hillside full of branching valleys, each valley ending at a different cell fate. He called the robustness of this process canalization, meaning the tendency of development to reach the same endpoint despite perturbation along the way. What I find more interesting is that he also drew the underside of the landscape, with genes represented as little pegs connected by strings to the surface above, pulling the topology into its particular shape. It was a metaphor without any real mathematics, but the intuition was doing the right kind of work. Regulatory architecture shapes the landscape. The landscape shapes the trajectories. The trajectories determine the outcomes. Everything that followed was essentially an attempt to put numbers on Waddington's cartoon.</p>
 
 <p>The first serious attempt came from Stuart Kauffman in 1969. Kauffman was thinking about gene regulation as a Boolean network, meaning each gene is either on or off and its state at the next time step is some logical function of its neighbors at this time step. If you set up a network like this and let it run, it turns out that it does not wander randomly through the space of possible states. It settles into attractors, meaning small sets of states that it cycles through or sits in indefinitely. Kauffman's claim was that cell types are these attractors (Kauffman, Journal of Theoretical Biology, 1969). You do not need a separate program for a liver cell and a neuron. You need a regulatory network whose dynamics happen to have a liver attractor and a neuron attractor. The cells fall into these attractors the same way a ball falls into a valley, and they stay there for the same reason.</p>
@@ -90,6 +96,12 @@
 
 <hr>
 <h2>Kernels, or why some genes are load-bearing</h2>
+
+<img style="width:100%;border-radius:4px;margin:2rem 0 0.4rem;display:block;filter:sepia(0.1) brightness(0.97);"
+     src="larv.jpg"
+     alt="Sea urchin embryo or larva"
+     loading="lazy">
+<p style="font-family:'DM Mono',monospace;font-size:0.73rem;color:var(--ink-faint);margin:0 0 1.8rem;letter-spacing:0.02em;">A sea urchin larva. The organism in which Davidson spent decades mapping the first complete developmental kernel, gene by gene.</p>
 
 <p>The most concrete version of Waddington's landscape in actual biological networks is something Eric Davidson and Douglas Erwin called a kernel (Davidson and Erwin, Science, 2006). A kernel is a small set of regulatory genes that are wired to each other so densely and so recursively that the whole subcircuit behaves as a unit. Each gene in the kernel feeds into the cis-regulatory modules of the others, usually with multiple redundant connections. Davidson spent decades working out the kernel for endomesoderm specification in the sea urchin, mapping every regulatory edge through systematic perturbation. What he found was that the kernel, consisting of a handful of genes (blimp1, otxβ, gatae, foxa, bra), is almost perfectly conserved between sea urchin and sea star across roughly 500 million years of evolution (Hinman and Davidson, PNAS, 2007). Perturb any single gene in this kernel and you do not get a mildly altered embryo. You get no body part at all. The whole specification program collapses.</p>
 
